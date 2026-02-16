@@ -1,12 +1,8 @@
-// System Headers
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
 #include "shader.h"
 
-// Standard Headers
-#include <cstdio>
-#include <cstdlib>
 #include <iostream>
 
 int main() {
@@ -29,7 +25,7 @@ int main() {
   // Create Context and Load OpenGL Functions
   glfwMakeContextCurrent(mWindow);
   gladLoadGL();
-  fprintf(stderr, "OpenGL %s\n", glGetString(GL_VERSION));
+  std::cout << "OpenGL " << glGetString(GL_VERSION) << "\n";
 
   glViewport(0, 0, 800, 800);
 
