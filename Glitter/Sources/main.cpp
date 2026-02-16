@@ -2,12 +2,14 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
+#include "shader.h"
+
 // Standard Headers
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
 
-int main(int argc, char *argv[]) {
+int main() {
 
   // Load GLFW and Create a Window
   glfwInit();
@@ -73,6 +75,7 @@ int main(int argc, char *argv[]) {
   glDeleteShader(vs);
   glDeleteShader(fs);
 
+  Shader shader("Glitter/Shaders");
 
   // Rendering Loop
   while (glfwWindowShouldClose(mWindow) == false) {
@@ -83,7 +86,7 @@ int main(int argc, char *argv[]) {
     glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shaderProgram);
+    shader.use();
     glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
