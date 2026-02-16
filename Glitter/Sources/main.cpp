@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 
 #include "shader.h"
+#include "texture.h"
 
 #include <iostream>
 
@@ -29,7 +30,17 @@ int main() {
 
   glViewport(0, 0, 800, 800);
 
-  float vertices[] = {-0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f};
+  float vertices[] = {
+      // positions        // UVs
+    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,  // bottom-left
+      0.5f, -0.5f, 0.0f,  1.0f, 0.0f,  // bottom-right
+      0.5f,  0.5f, 0.0f,  1.0f, 1.0f,  // top-right
+
+    -0.5f, -0.5f, 0.0f,  0.0f, 0.0f,  // bottom-left
+      0.5f,  0.5f, 0.0f,  1.0f, 1.0f,  // top-right
+    -0.5f,  0.5f, 0.0f,  0.0f, 1.0f   // top-left
+  };
+
 
   GLuint VBO, VAO;
 
@@ -41,10 +52,17 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *) 0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) 0);
   glEnableVertexAttribArray(0);
 
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
   Shader shader("Glitter/Shaders");
+  Texture texture("Glitter/Shaders/texture.png");
+
+  shader.use();
+  shader.setInt("texSampler", 0);
 
   // Rendering Loop
   while (glfwWindowShouldClose(mWindow) == false) {
@@ -56,8 +74,12 @@ int main() {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader.use();
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.id());
+
     glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
 
     // Flip Buffers and Draw
     glfwSwapBuffers(mWindow);
