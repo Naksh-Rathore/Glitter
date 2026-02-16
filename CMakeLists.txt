@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.24)
 project(Glitter)
 
 option(GLFW_BUILD_DOCS OFF)
