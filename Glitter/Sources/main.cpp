@@ -58,8 +58,8 @@ int main() {
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *) (3 * sizeof(float)));
   glEnableVertexAttribArray(1);
 
-  Shader shader("Glitter/Shaders");
-  Texture texture("Glitter/Shaders/texture.png");
+  Shader shader("Glitter/Assets");
+  Texture texture("Glitter/Assets/texture.png");
 
   shader.use();
   shader.setInt("texSampler", 0);

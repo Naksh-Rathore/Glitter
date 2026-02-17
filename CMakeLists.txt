@@ -30,11 +30,11 @@ include_directories(Glitter/Headers/
 file(GLOB VENDORS_SOURCES Glitter/Vendor/glad/src/glad.c)
 file(GLOB PROJECT_HEADERS Glitter/Headers/*.hpp)
 file(GLOB PROJECT_SOURCES Glitter/Sources/*.cpp)
-file(GLOB PROJECT_SHADERS Glitter/Shaders/*.comp
-                          Glitter/Shaders/*.frag
-                          Glitter/Shaders/*.geom
-                          Glitter/Shaders/*.vert
-                          Glitter/Shaders/*.png)
+file(GLOB PROJECT_SHADERS Glitter/Assets/*.comp
+                          Glitter/Assets/*.frag
+                          Glitter/Assets/*.geom
+                          Glitter/Assets/*.vert
+                          Glitter/Assets/*.png)
 file(GLOB PROJECT_CONFIGS CMakeLists.txt
                           Readme.md
                          .gitattributes
@@ -42,7 +42,7 @@ file(GLOB PROJECT_CONFIGS CMakeLists.txt
                          .gitmodules)
 
 source_group("Headers" FILES ${PROJECT_HEADERS})
-source_group("Shaders" FILES ${PROJECT_SHADERS})
+source_group("Assets" FILES ${PROJECT_SHADERS})
 source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("Vendors" FILES ${VENDORS_SOURCES})
 
@@ -58,5 +58,5 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 
 add_custom_command(
     TARGET ${PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Glitter/Shaders $<TARGET_FILE_DIR:${PROJECT_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/Glitter/Assets $<TARGET_FILE_DIR:${PROJECT_NAME}>
     DEPENDS ${PROJECT_SHADERS})
