@@ -1,0 +1,3 @@
+To-do:
+
+- Implement Model class to load models with Assimp (learnopengl.com)
