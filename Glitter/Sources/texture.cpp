@@ -5,8 +5,9 @@
 
 #include <string>
 
-Texture::Texture(const std::string& imagePath) 
+Texture::Texture(const std::string& imagePath, const std::string& textureName) 
     : m_imagePath(imagePath)
+    , m_textureName(textureName)
 {
     uploadTexture();
 }
