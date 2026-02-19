@@ -7,12 +7,10 @@
 class Texture {
     public:
         std::string m_imagePath;
+        std::string m_textureName;
 
-        Texture(const std::string& imagePath);
-        
-        Texture(const Texture&) = delete;
-        Texture& operator=(const Texture&) = delete;   
-
+        Texture(const std::string& imagePath, const std::string& textureName);
+ 
         GLuint id() { return m_id; }
 
     private:
