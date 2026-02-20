@@ -21,6 +21,7 @@ class Model {
     private:
         std::vector<Mesh> m_meshes;
         std::string m_modelDirectory;
+        std::vector<BasicTexture> m_loadedTextures;
         
         void loadModel(const std::string& path); 
 

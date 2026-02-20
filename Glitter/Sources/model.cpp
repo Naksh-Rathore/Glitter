@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <cstring>
 
 #include "assimp/material.h"
 #include "mesh.h"
@@ -99,14 +100,24 @@ std::vector<BasicTexture> Model::loadMaterialTextures(aiMaterial *mat, aiTexture
         mat->GetTexture(type, i, &str);
 
         BasicTexture texture;
+        bool skipTextureLoad = false;
 
-        texture.m_id = loadTextureFromFile(str.C_Str(), m_modelDirectory);
-        texture.m_textureName = typeName;
-        texture.m_path = std::string(str.C_Str());
+        for (unsigned int j = 0; j < (unsigned int) m_loadedTextures.size(); j++) {
+            if (std::strcmp(m_loadedTextures.at(j).m_path.data(), str.C_Str())) {
+                textures.push_back(m_loadedTextures.at(j));
+                skipTextureLoad = true;
+                break;
+            }
+        }
 
-        textures.push_back(texture);
+        if (!skipTextureLoad) {
+            texture.m_id = loadTextureFromFile(str.C_Str(), m_modelDirectory);
+            texture.m_textureName = typeName;
+            texture.m_path = std::string(str.C_Str());
+
+            textures.push_back(texture);
+        }
     }
 
     return textures;
 }
-
