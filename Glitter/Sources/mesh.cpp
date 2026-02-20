@@ -13,7 +13,9 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>&
         : m_vertices(vertices)
         , m_indices(indices)
         , m_textures(textures)
-{}
+{
+    uploadMesh();
+}
 
 void Mesh::uploadMesh() {
     glGenVertexArrays(1, &m_VAO);
@@ -77,9 +79,9 @@ void Mesh::draw(Shader& shader) {
     glBindVertexArray(m_VAO);
     
     if (m_indices.empty())
-        glDrawArrays(GL_TRIANGLES, 0, (int) m_vertices.size() / 8);
+        glDrawArrays(GL_TRIANGLES, 0, (GLsizei) m_vertices.size());
     else
-        glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+        glDrawElements(GL_TRIANGLES, (GLsizei) m_indices.size(), GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
     glUseProgram(0);
