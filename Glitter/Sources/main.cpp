@@ -4,11 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <iostream>
-#include <vector>
 
-#include "mesh.h"
-#include "texture.h"
-#include "shader.h"
 #include "camera.h"
 
 FreeCamera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 15.0f, 0.125f);
