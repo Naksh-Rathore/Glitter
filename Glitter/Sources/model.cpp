@@ -103,7 +103,7 @@ std::vector<BasicTexture> Model::loadMaterialTextures(aiMaterial *mat, aiTexture
         bool skipTextureLoad = false;
 
         for (unsigned int j = 0; j < (unsigned int) m_loadedTextures.size(); j++) {
-            if (std::strcmp(m_loadedTextures.at(j).m_path.data(), str.C_Str())) {
+            if (std::strcmp(m_loadedTextures.at(j).m_path.data(), str.C_Str()) == 0) {
                 textures.push_back(m_loadedTextures.at(j));
                 skipTextureLoad = true;
                 break;
@@ -116,6 +116,7 @@ std::vector<BasicTexture> Model::loadMaterialTextures(aiMaterial *mat, aiTexture
             texture.m_path = std::string(str.C_Str());
 
             textures.push_back(texture);
+            m_loadedTextures.push_back(texture);
         }
     }
 
