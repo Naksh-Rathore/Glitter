@@ -14,12 +14,12 @@ class Mesh {
     public:
         std::vector<float> m_vertices;
         std::vector<unsigned int> m_indices;
-        std::vector<Texture> m_textures;
+        std::vector<BasicTexture> m_textures;
         
         Mesh (const Mesh&) = delete;
         Mesh& operator=(const Mesh&) = delete;
 
-        Mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices = {}, const std::vector<Texture>& textures = {});
+        Mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices = {}, const std::vector<BasicTexture>& textures = {});
 
         void draw(Shader& shader);
         void uploadMesh();

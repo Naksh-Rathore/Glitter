@@ -4,6 +4,11 @@
 
 #include <string>
 
+struct BasicTexture {
+    std::string m_textureName;
+    GLuint m_id;
+};
+
 class Texture {
     public:
         std::string m_imagePath;
