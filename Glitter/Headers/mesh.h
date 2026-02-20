@@ -23,9 +23,6 @@ class Mesh {
         std::vector<unsigned int> m_indices;
         std::vector<BasicTexture> m_textures;
         
-        Mesh (const Mesh&) = delete;
-        Mesh& operator=(const Mesh&) = delete;
-
         Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices = {}, const std::vector<BasicTexture>& textures = {});
 
         void draw(Shader& shader);

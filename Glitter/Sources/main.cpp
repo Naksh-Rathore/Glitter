@@ -2,10 +2,13 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <stb_image.h>
 
 #include <iostream>
 
 #include "camera.h"
+#include "shader.h"
+#include "model.h"
 
 FreeCamera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 15.0f, 0.125f);
 
@@ -57,12 +60,34 @@ int main() {
 
   // Create Context and Load OpenGL Functions
   glfwMakeContextCurrent(window);
-  gladLoadGL();
+    
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD\n";
+        return -1;
+    } 
+
+  stbi_set_flip_vertically_on_load(true); 
+ 
+
   std::cout << "OpenGL " << glGetString(GL_VERSION) << "\n";
 
   glViewport(0, 0, 800, 800);
     
   glEnable(GL_DEPTH_TEST);
+
+  Shader shader("Glitter/Assets");
+
+  shader.use();
+
+  shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
+  shader.setMat4("projection", glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f));
+  shader.setMat4("view", camera.viewMatrix());
+
+  std::cout << "Starting model load" << "\n";
+
+  Model model("Glitter/Assets/backpack/backpack.obj");
+
+  std::cout << "Finished model load" << "\n";
 
 
   // Rendering Loop
@@ -86,6 +111,19 @@ int main() {
     // Background Fill Color
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    shader.use();
+
+    shader.setMat4("view", camera.viewMatrix());
+
+    shader.setFloat("material.shininess", 32.0f);
+
+    shader.setVec3("light.position", glm::vec3(10.0f));
+    shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+    shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    model.draw(shader);
 
     // Flip Buffers and Draw
     glfwSwapBuffers(window);
