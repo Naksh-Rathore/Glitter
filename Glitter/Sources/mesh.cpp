@@ -8,7 +8,7 @@
 #include "texture.h"
 #include "shader.h"
 
-Mesh::Mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices,  const std::vector<Texture>& textures)
+Mesh::Mesh(const std::vector<float>& vertices, const std::vector<unsigned int>& indices,  const std::vector<BasicTexture>& textures)
         : m_vertices(vertices)
         , m_indices(indices)
         , m_textures(textures)
@@ -54,7 +54,7 @@ void Mesh::draw(Shader& shader) {
 
     /* Format for phong lighting uniforms
                 
-                Texture Type    Texture Number
+                BasicTexture Type    Texture Number
        material.texture_specular1;
        material.texture_diffuse1;
 
@@ -70,7 +70,7 @@ void Mesh::draw(Shader& shader) {
 
         shader.setInt(("material." + m_textures.at(i).m_textureName + textureUniformNumber).c_str(), i);
 
-        glBindTexture(GL_TEXTURE_2D, m_textures.at(i).id());
+        glBindTexture(GL_TEXTURE_2D, m_textures.at(i).m_id);
     }  
 
     glBindVertexArray(m_VAO);
