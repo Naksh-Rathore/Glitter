@@ -61,12 +61,7 @@ int main() {
     shader.setMat4("projection", glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
-    std::cout << "Starting model load" << "\n";
-
     Model model("Glitter/Assets/backpack/backpack.obj");
-
-    std::cout << "Finished model load" << "\n";
-
 
     // Rendering Loop
     while (!glfwWindowShouldClose(window)) {
