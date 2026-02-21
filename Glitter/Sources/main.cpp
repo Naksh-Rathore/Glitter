@@ -1,7 +1,10 @@
+#include <cstdlib>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+
 #include <stb_image.h>
 
 #include <iostream>
@@ -9,6 +12,7 @@
 #include "camera.h"
 #include "shader.h"
 #include "model.h"
+#include "init.h"
 
 FreeCamera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 15.0f, 0.125f);
 
@@ -39,41 +43,15 @@ void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yp
 
 int main() {
 
-  // Load GLFW and Create a Window
-  glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-  glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    GLFWwindow *window = Init::init();
 
-  GLFWwindow* window = glfwCreateWindow(800, 800, "OpenGL", nullptr, nullptr);
+    if (window == nullptr) 
+        return EXIT_FAILURE;
 
-  glfwSetCursorPosCallback(window, mouseCallback);
-  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-  // Check for Valid Context
-  if (window == nullptr) {
-    fprintf(stderr, "Failed to Create OpenGL Context");
-    return EXIT_FAILURE;
-  }
-
-  // Create Context and Load OpenGL Functions
-  glfwMakeContextCurrent(window);
-    
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        std::cerr << "Failed to initialize GLAD\n";
-        return -1;
-    } 
-
-  stbi_set_flip_vertically_on_load(true); 
- 
-
-  std::cout << "OpenGL " << glGetString(GL_VERSION) << "\n";
-
-  glViewport(0, 0, 800, 800);
-    
-  glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
 
   Shader shader("Glitter/Assets");
 
