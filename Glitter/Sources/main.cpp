@@ -53,61 +53,61 @@ int main() {
 
     glEnable(GL_DEPTH_TEST);
 
-  Shader shader("Glitter/Assets");
+    Shader shader("Glitter/Assets");
 
-  shader.use();
-
-  shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
-  shader.setMat4("projection", glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f));
-  shader.setMat4("view", camera.viewMatrix());
-
-  std::cout << "Starting model load" << "\n";
-
-  Model model("Glitter/Assets/backpack/backpack.obj");
-
-  std::cout << "Finished model load" << "\n";
-
-
-  // Rendering Loop
-  while (!glfwWindowShouldClose(window)) {
-    float currentFrame = static_cast<float>(glfwGetTime());
-    deltaTime = currentFrame - lastFrame;
-    lastFrame = currentFrame;
-
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-      glfwSetWindowShouldClose(window, true);
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.processKeyboardInput(CameraDirection::FORWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.processKeyboardInput(CameraDirection::BACKWARD, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
-
-    // Background Fill Color
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
     shader.use();
 
+    shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
+    shader.setMat4("projection", glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
-    shader.setFloat("material.shininess", 32.0f);
+    std::cout << "Starting model load" << "\n";
 
-    shader.setVec3("light.position", glm::vec3(10.0f));
-    shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-    shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+    Model model("Glitter/Assets/backpack/backpack.obj");
 
-    model.draw(shader);
+    std::cout << "Finished model load" << "\n";
 
-    // Flip Buffers and Draw
-    glfwSwapBuffers(window);
-    glfwPollEvents();
-  }
 
-  glfwTerminate();
-  return EXIT_SUCCESS;
+    // Rendering Loop
+    while (!glfwWindowShouldClose(window)) {
+        float currentFrame = static_cast<float>(glfwGetTime());
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+            glfwSetWindowShouldClose(window, true);
+
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+            camera.processKeyboardInput(CameraDirection::FORWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+            camera.processKeyboardInput(CameraDirection::BACKWARD, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+            camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+            camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
+
+        // Background Fill Color
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        shader.use();
+
+        shader.setMat4("view", camera.viewMatrix());
+
+        shader.setFloat("material.shininess", 32.0f);
+
+        shader.setVec3("light.position", glm::vec3(10.0f));
+        shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+        shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+        shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+        model.draw(shader);
+
+        // Flip Buffers and Draw
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    glfwTerminate();
+    return EXIT_SUCCESS;
 }
