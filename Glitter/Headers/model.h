@@ -14,7 +14,7 @@
 
 class Model {
     public:
-        Model(const std::string& path);
+        Model(const std::string& path, bool shouldFlipUVs = false);
 
         void draw(Shader& shader);
 
@@ -23,7 +23,7 @@ class Model {
         std::string m_modelDirectory;
         std::vector<BasicTexture> m_loadedTextures;
         
-        void loadModel(const std::string& path); 
+        void loadModel(const std::string& path, bool shouldFlipUVs = false); 
 
         void processNode(aiNode *node, const aiScene *scene);
         Mesh processMesh(aiMesh *mesh, const aiScene *scene);

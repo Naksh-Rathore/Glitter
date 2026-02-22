@@ -15,9 +15,9 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
-Model::Model(const std::string& path)
+Model::Model(const std::string& path, bool flipUVs)
 {
-    loadModel(path);
+    loadModel(path, flipUVs);
 }
 
 void Model::draw(Shader &shader) {
@@ -25,10 +25,12 @@ void Model::draw(Shader &shader) {
         m_meshes.at(i).draw(shader);
 }
 
-void Model::loadModel(const std::string& path) {
+void Model::loadModel(const std::string& path, bool flipUVs) {
     Assimp::Importer import;
 
-    const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+    unsigned int flags = flipUVs ? aiProcess_Triangulate | aiProcess_FlipUVs : aiProcess_Triangulate;
+
+    const aiScene *scene = import.ReadFile(path, flags); 
 
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
         throw std::runtime_error(std::string("Error::Assimp::") + import.GetErrorString());
