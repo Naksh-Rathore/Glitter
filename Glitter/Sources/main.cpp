@@ -59,7 +59,7 @@ int main() {
     shader.setMat4("projection", glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
-    Model model("Glitter/Assets/backpack/backpack.obj");
+    Model model("Glitter/Assets/backpack/backpack.obj", true);
 
     // Rendering Loop
     while (!glfwWindowShouldClose(window)) {
