@@ -17,27 +17,7 @@ FreeCamera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm
 float deltaTime;
 float lastFrame;
 
-void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
-
-    if (camera.firstMouse()) {
-        camera.setLastX(xpos);
-        camera.setLastY(ypos);
-            
-        camera.setFirstMouse(false);
-        return;
-    }
-
-    float xoffset = xpos - camera.lastX();
-    float yoffset = camera.lastY() - ypos; // reversed since y-coordinates go from bottom to top
-
-    camera.setLastX(xpos);
-    camera.setLastY(ypos);
-
-    camera.processMouseInput(xoffset, yoffset);
-}
-
+void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn);
 
 int main() {
 
@@ -104,3 +84,31 @@ int main() {
     glfwTerminate();
     return EXIT_SUCCESS;
 }
+
+
+
+
+
+void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (camera.firstMouse()) {
+        camera.setLastX(xpos);
+        camera.setLastY(ypos);
+            
+        camera.setFirstMouse(false);
+        return;
+    }
+
+    float xoffset = xpos - camera.lastX();
+    float yoffset = camera.lastY() - ypos; // reversed since y-coordinates go from bottom to top
+
+    camera.setLastX(xpos);
+    camera.setLastY(ypos);
+
+    camera.processMouseInput(xoffset, yoffset);
+}
+
+
+
