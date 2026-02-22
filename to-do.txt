@@ -1,4 +1,3 @@
 To-do:
 
-- Learn how to make 3D models suitable for OpenGL rendering
 - Do Advanced OpenGL factor after Graphing Calculator project
