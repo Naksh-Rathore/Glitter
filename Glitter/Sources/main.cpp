@@ -18,6 +18,7 @@ float deltaTime;
 float lastFrame;
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn);
+void processInput(GLFWwindow *window);
 
 int main() {
 
@@ -47,17 +48,7 @@ int main() {
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-            glfwSetWindowShouldClose(window, true);
-
-        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-            camera.processKeyboardInput(CameraDirection::FORWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-            camera.processKeyboardInput(CameraDirection::BACKWARD, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-            camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
-        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-            camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
+        processInput(window);
 
         // Background Fill Color
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
@@ -85,10 +76,6 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-
-
-
-
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {
     float xpos = static_cast<float>(xposIn);
     float ypos = static_cast<float>(yposIn);
@@ -110,5 +97,17 @@ void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yp
     camera.processMouseInput(xoffset, yoffset);
 }
 
+void processInput(GLFWwindow *window) {
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
 
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        camera.processKeyboardInput(CameraDirection::FORWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        camera.processKeyboardInput(CameraDirection::BACKWARD, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
+}
 
