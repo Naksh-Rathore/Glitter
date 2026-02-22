@@ -12,12 +12,13 @@
 #include "model.h"
 #include "init.h"
 
-FreeCamera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.125f);
+FreeCamera camera(FreeCameraSettings(glm::vec3(0.0f), 5.0f, 0.125f, 45.0f));
 
 float deltaTime;
 float lastFrame;
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn);
+
 void processInput(GLFWwindow *window);
 
 int main() {

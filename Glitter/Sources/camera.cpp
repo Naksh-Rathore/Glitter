@@ -4,15 +4,22 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-FreeCamera::FreeCamera(const glm::vec3& pos, const glm::vec3& front, const glm::vec3& up, float yaw, float pitch, float camSpeed, float mouseSensi)
-    : m_pos { pos }
-    , m_front { front }
-    , m_worldUp { up }
-    , m_camSpeed { camSpeed }
-    , m_mouseSensi { mouseSensi }
-    , m_zoom { 45.0f }
-    , m_yaw { yaw }          
-    , m_pitch { pitch }  
+FreeCameraSettings::FreeCameraSettings(const glm::vec3& pos, float camSpeed, float mouseSensi, float zoom)
+    : m_pos(pos)
+    , m_camSpeed(camSpeed)
+    , m_mouseSensi(mouseSensi)
+    , m_zoom(zoom)
+{}
+
+FreeCamera::FreeCamera(FreeCameraSettings settings)
+    : m_pos { settings.m_pos }
+    , m_front { glm::vec3(0.0f, 0.0f, -1.0f)}
+    , m_worldUp { glm::vec3(0.0f, 1.0f, 0.0f)}
+    , m_camSpeed { settings.m_camSpeed }
+    , m_mouseSensi { settings.m_mouseSensi }
+    , m_zoom { settings.m_zoom }
+    , m_yaw { -90.0f }          
+    , m_pitch { 0.0f }  
     , m_firstMouse(true)
 {
     updateCameraVectors();

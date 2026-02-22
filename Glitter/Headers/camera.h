@@ -10,6 +10,16 @@ enum CameraDirection {
     NONE
 };  
 
+struct FreeCameraSettings {
+    glm::vec3 m_pos{};
+
+    float m_camSpeed;
+    float m_mouseSensi;
+    float m_zoom;
+
+    FreeCameraSettings(const glm::vec3& pos, const float camSpeed, float mouseSensi, float zoom);
+};
+
 class FreeCamera {
     private:
         glm::vec3 m_pos{};
@@ -30,7 +40,7 @@ class FreeCamera {
         void updateCameraVectors();
 
     public:
-        FreeCamera(const glm::vec3& pos, const glm::vec3& front, const glm::vec3& up, float yaw, float pitch, float camSpeed, float mouseSensi);
+        FreeCamera(FreeCameraSettings settings);
 
         glm::mat4 viewMatrix();
 
