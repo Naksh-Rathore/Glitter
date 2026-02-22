@@ -5,14 +5,15 @@
 #include <glm/gtc/type_ptr.hpp>
 
 FreeCamera::FreeCamera(const glm::vec3& pos, const glm::vec3& front, const glm::vec3& up, float yaw, float pitch, float camSpeed, float mouseSensi)
-: m_pos { pos }
-, m_front { front }
-, m_worldUp { up }
-, m_camSpeed { camSpeed }
-, m_mouseSensi { mouseSensi }
-, m_zoom { 45.0f }
-, m_yaw { yaw }          
-, m_pitch { pitch }  
+    : m_pos { pos }
+    , m_front { front }
+    , m_worldUp { up }
+    , m_camSpeed { camSpeed }
+    , m_mouseSensi { mouseSensi }
+    , m_zoom { 45.0f }
+    , m_yaw { yaw }          
+    , m_pitch { pitch }  
+    , m_firstMouse(true)
 {
     updateCameraVectors();
 }
@@ -34,7 +35,26 @@ void FreeCamera::processKeyboardInput(CameraDirection direction, float deltaTime
         m_pos -= m_right * camSpeed;
 }
 
-void FreeCamera::processMouseInput(float xOffset, float yOffset, bool stopRoll) {
+void FreeCamera::processMouseInput(float xposIn, float yposIn, bool stopRoll) {
+   
+    float xpos = static_cast<float>(xposIn);
+    float ypos = static_cast<float>(yposIn);
+
+    if (m_firstMouse) {
+        m_lastX = xpos;
+        m_lastY = ypos;
+        
+        m_firstMouse = false;
+
+        return;
+    }
+
+    float xOffset = xpos - m_lastX;
+    float yOffset = m_lastY - ypos; // reversed since y-coordinates go from bottom to top
+    
+    m_lastX = xpos;
+    m_lastY = ypos;
+
     xOffset *= m_mouseSensi;
     yOffset *= m_mouseSensi;
 

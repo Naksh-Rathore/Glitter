@@ -77,24 +77,7 @@ int main() {
 }
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {
-    float xpos = static_cast<float>(xposIn);
-    float ypos = static_cast<float>(yposIn);
-
-    if (camera.firstMouse()) {
-        camera.setLastX(xpos);
-        camera.setLastY(ypos);
-            
-        camera.setFirstMouse(false);
-        return;
-    }
-
-    float xoffset = xpos - camera.lastX();
-    float yoffset = camera.lastY() - ypos; // reversed since y-coordinates go from bottom to top
-
-    camera.setLastX(xpos);
-    camera.setLastY(ypos);
-
-    camera.processMouseInput(xoffset, yoffset);
+    camera.processMouseInput(xposIn, yposIn);
 }
 
 void processInput(GLFWwindow *window) {
