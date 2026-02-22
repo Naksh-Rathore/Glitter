@@ -7,14 +7,12 @@
 
 #include <stb_image.h>
 
-#include <iostream>
-
 #include "camera.h"
 #include "shader.h"
 #include "model.h"
 #include "init.h"
 
-FreeCamera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 15.0f, 0.125f);
+FreeCamera camera(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), -90.0f, 0.0f, 5.0f, 0.125f);
 
 float deltaTime;
 float lastFrame;
@@ -57,7 +55,7 @@ int main() {
 
     shader.use();
 
-    shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
+    shader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)), glm::vec3(0.25f)));
     shader.setMat4("projection", glm::perspective(glm::radians(45.0f), 800.0f / 800.0f, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
@@ -91,7 +89,7 @@ int main() {
 
         shader.setFloat("material.shininess", 32.0f);
 
-        shader.setVec3("light.position", glm::vec3(10.0f));
+        shader.setVec3("light.position", glm::vec3(100.0f));
         shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
         shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
         shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
