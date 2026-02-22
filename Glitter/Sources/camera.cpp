@@ -83,8 +83,8 @@ void FreeCamera::processScrollInput(float yOffset) {
 
     if (m_zoom < 1.0f)
         m_zoom = 1.0f;
-    if (m_zoom > 45.0f)
-        m_zoom = 45.0f;
+    if (m_zoom > 90.0f)
+        m_zoom = 90.0f;
 }
 
 void FreeCamera::updateCameraVectors() {

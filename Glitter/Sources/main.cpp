@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include <iostream>
+
 #include <stb_image.h>
 
 #include "camera.h"
@@ -18,6 +20,7 @@ float deltaTime;
 float lastFrame;
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn);
+void scrollCallback([[maybe_unused]] GLFWwindow* window, double xoffset, double yoffset);
 
 void processInput(GLFWwindow *window);
 
@@ -29,6 +32,8 @@ int main() {
         return EXIT_FAILURE;
 
     glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetScrollCallback(window, scrollCallback);
+
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_DEPTH_TEST);
@@ -38,7 +43,7 @@ int main() {
     shader.use();
 
     shader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)), glm::vec3(0.25f)));
-    shader.setMat4("projection", glm::perspective(glm::radians(45.0f), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
+    shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
     Model model("Glitter/Assets/backpack/backpack.obj", true);
@@ -55,8 +60,11 @@ int main() {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        shader.use();
+        std::cout << camera.m_zoom << "\n";
 
+        shader.use();
+        
+        shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
         shader.setMat4("view", camera.viewMatrix());
 
         shader.setFloat("material.shininess", 32.0f);
@@ -93,5 +101,9 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
+}
+
+void scrollCallback([[maybe_unused]] GLFWwindow* window, double xoffset, double yoffset) {
+    camera.processScrollInput(yoffset);
 }
 
