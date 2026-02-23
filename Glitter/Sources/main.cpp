@@ -5,8 +5,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <iostream>
-
 #include <stb_image.h>
 
 #include "camera.h"
@@ -59,8 +57,6 @@ int main() {
         // Background Fill Color
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        std::cout << camera.m_zoom << "\n";
 
         shader.use();
         
