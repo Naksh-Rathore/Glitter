@@ -25,6 +25,21 @@ FreeCamera::FreeCamera(FreeCameraSettings settings)
     updateCameraVectors();
 }
 
+FreeCamera::FreeCamera(const glm::vec3& pos, const float camSpeed, float mouseSensi, float zoom)
+    : m_pos(pos)
+    , m_front(glm::vec3(0.0f, 0.0f, -1.0f))
+    , m_worldUp(glm::vec3(0.0f, 1.0f, 0.0f))
+    , m_camSpeed(camSpeed)
+    , m_mouseSensi(mouseSensi)
+    , m_zoom(zoom)
+    , m_yaw(-90.0f)
+    , m_pitch(0.0f)
+    , m_firstMouse(true)
+{
+    updateCameraVectors();
+}
+
+
 glm::mat4 FreeCamera::viewMatrix() {
     return glm::lookAt(m_pos, m_pos + m_front, m_up);
 }

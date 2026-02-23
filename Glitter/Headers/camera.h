@@ -41,6 +41,7 @@ class FreeCamera {
 
     public:
         FreeCamera(FreeCameraSettings settings);
+        FreeCamera(const glm::vec3& pos, const float camSpeed, float mouseSensi, float zoom);
 
         glm::mat4 viewMatrix();
 

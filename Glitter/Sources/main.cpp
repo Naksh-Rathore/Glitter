@@ -14,7 +14,7 @@
 #include "model.h"
 #include "init.h"
 
-FreeCamera camera(FreeCameraSettings(glm::vec3(0.0f), 5.0f, 0.125f, 45.0f));
+FreeCamera camera(glm::vec3(0.0f), 5.0f, 0.125f, 45.0f);
 
 float deltaTime;
 float lastFrame;
