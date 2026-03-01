@@ -8,8 +8,11 @@
 #include <stb_image.h>
 
 namespace Init {
-    void framebuffer_size_callback([[maybe_unused]] GLFWwindow *window, int width, int height) {
-        glViewport(0, 0, width, height);
+    void framebuffer_size_callback(GLFWwindow *window, [[maybe_unused]] int width, [[maybe_unused]] int height) {
+        int frameBufferWidth, frameBufferHeight;
+
+        glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
+        glViewport(0, 0, frameBufferWidth, frameBufferHeight);
     }
 
     GLFWwindow* init() {
@@ -40,12 +43,13 @@ namespace Init {
             return nullptr;
         }
 
-        glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
-        
+        int frameBufferWidth, frameBufferHeight;
+
+        glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
+        glViewport(0, 0, frameBufferWidth, frameBufferHeight);
+
         stbi_set_flip_vertically_on_load(true);
-
-        std::cout << "OpenGL " << glGetString(GL_VERSION) << "\n";
-
+        
         return window;
     }
 }
