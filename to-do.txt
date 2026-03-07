@@ -1,3 +1,6 @@
 To-do:
 
-- Do Advanced OpenGL section 
+- Complete Advanced OpenGL section 
+- Complete Advanced Lighting section
+- Create project 3D Truss Analyzer (with JSON truss construction)
+- Create project Aim Trainer (with 1-2 different modes to train on)
