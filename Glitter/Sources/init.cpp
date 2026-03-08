@@ -62,7 +62,7 @@ namespace Init {
         std::cout << std::endl;
     }
 
-    GLFWwindow* init() {
+    GLFWwindow* init(bool shouldFullscreen) {
         if (!glfwInit()) {
             std::cerr << "GLFW failed to initialize!\n";
             return nullptr;
@@ -73,6 +73,13 @@ namespace Init {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  
+
+        if (shouldFullscreen) {
+            SCREEN_WIDTH = 1920.0f;
+            SCREEN_HEIGHT = 1080.0f;
+        }
+
+        std::cout << SCREEN_WIDTH << " x " << SCREEN_HEIGHT << "\n";
 
         GLFWwindow *window { glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGL", nullptr, nullptr) };
 

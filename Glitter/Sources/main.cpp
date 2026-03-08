@@ -1,4 +1,6 @@
 #include <cstdlib>
+#include <cstring>
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -22,9 +24,14 @@ void scrollCallback([[maybe_unused]] GLFWwindow* window, double xoffset, double 
 
 void processInput(GLFWwindow *window);
 
-int main() {
+int main(int argc, char **argv) {
 
-    GLFWwindow *window = Init::init();
+    bool shouldFullscreen = false;
+
+    if (argc == 2 && (std::strcmp(argv[1], "--fullscreen") == 0))
+        shouldFullscreen = true;
+
+    GLFWwindow *window = Init::init(shouldFullscreen);
 
     if (window == nullptr) 
         return EXIT_FAILURE;
