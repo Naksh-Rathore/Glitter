@@ -20,7 +20,7 @@ float deltaTime;
 float lastFrame;
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn);
-void scrollCallback([[maybe_unused]] GLFWwindow* window, double xoffset, double yoffset);
+void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset);
 
 void processInput(GLFWwindow *window);
 
@@ -106,7 +106,7 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
 }
 
-void scrollCallback([[maybe_unused]] GLFWwindow* window, double xoffset, double yoffset) {
+void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {
     camera.processScrollInput(yoffset);
 }
 
