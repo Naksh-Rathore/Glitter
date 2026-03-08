@@ -3,8 +3,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#define SCREEN_WIDTH 800
-#define SCREEN_HEIGHT 800
+constexpr float SCREEN_WIDTH = 1920.0f;
+constexpr float SCREEN_HEIGHT = 1080.0f;
 
 namespace Init {
     void framebuffer_size_callback(GLFWwindow *window, int width, int height);
