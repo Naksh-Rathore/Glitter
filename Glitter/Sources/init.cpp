@@ -79,8 +79,6 @@ namespace Init {
             SCREEN_HEIGHT = 1080.0f;
         }
 
-        std::cout << SCREEN_WIDTH << " x " << SCREEN_HEIGHT << "\n";
-
         GLFWwindow *window { glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "OpenGL", nullptr, nullptr) };
 
         if (window == nullptr) {
