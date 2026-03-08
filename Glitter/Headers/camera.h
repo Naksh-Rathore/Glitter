@@ -49,6 +49,8 @@ class FreeCamera {
         void processMouseInput(float xposIn, float yposIn, bool stopRoll = true);
         void processScrollInput(float yOffset);
 
+        glm::vec3 pos() { return m_pos; }
+
         float m_camSpeed;
         float m_mouseSensi;
         float m_zoom;
