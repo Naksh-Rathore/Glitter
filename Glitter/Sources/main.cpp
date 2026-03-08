@@ -27,9 +27,14 @@ void processInput(GLFWwindow *window);
 int main(int argc, char **argv) {
 
     bool shouldFullscreen = false;
+    bool shouldAttenuate = false;
 
-    if (argc == 2 && (std::strcmp(argv[1], "--fullscreen") == 0))
-        shouldFullscreen = true;
+    for (int i = 1; i < argc; i++) {
+        if (std::strcmp(argv[i], "--fullscreen") == 0)
+            shouldFullscreen = true;
+        else if (std::strcmp(argv[i], "--attenuate") == 0)
+            shouldAttenuate = true;
+    }
 
     GLFWwindow *window = Init::init(shouldFullscreen);
 
@@ -50,6 +55,12 @@ int main(int argc, char **argv) {
     shader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)), glm::vec3(1.0f)));
     shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
+
+    shader.setFloat("light.constant", 1.0f);
+    shader.setFloat("light.linear", 0.09f);
+    shader.setFloat("light.quadratic", 0.032f);
+
+    shader.setBool("shouldAttenuate", shouldAttenuate);
 
     Model model("Glitter/Assets/dining-room/dining-room.obj");
 

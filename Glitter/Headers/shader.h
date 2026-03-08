@@ -39,6 +39,10 @@ class Shader {
             glUniform1i(glGetUniformLocation(m_id, name), value); 
         }
 
+        void setBool(const char* name, bool value) const { 
+            glUniform1i(glGetUniformLocation(m_id, name), static_cast<int>(value)); 
+        }
+
     private:
         GLuint m_vert;
         GLuint m_frag;
