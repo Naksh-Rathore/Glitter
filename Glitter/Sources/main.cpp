@@ -40,11 +40,11 @@ int main() {
 
     shader.use();
 
-    shader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)), glm::vec3(0.25f)));
-    shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
+    shader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)), glm::vec3(1.0f)));
+    shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
-    Model model("Glitter/Assets/backpack/backpack.obj", true);
+    Model model("Glitter/Assets/dining-room/dining-room.obj");
 
     // Rendering Loop
     while (!glfwWindowShouldClose(window)) {
