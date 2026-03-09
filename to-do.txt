@@ -4,3 +4,5 @@ To-do:
 - Complete Advanced Lighting section
 - Create project 3D Truss Analyzer (with JSON truss construction)
 - Create project Aim Trainer (with 1-2 different modes to train on)
+- Create small 3D engine API
+- Create project Minecraft Clone (using that engine if wanted to);
