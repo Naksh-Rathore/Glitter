@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 
     Mesh boxMesh(CommonVertices::CubeVertices, CommonVertices::CubeIndices, boxTextures);
 
-    Shader shader("Glitter/Assets");
+    Shader shader("Glitter/Assets/shaders");
 
     shader.use();
 
