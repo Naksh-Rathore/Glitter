@@ -1,5 +1,7 @@
 To-do:
 
+- Add ImGUI to the project as a debug menu for what models/meshes to render, lighting methods, and more
+
 - Complete Advanced OpenGL section 
 - Complete Advanced Lighting section
 - Create project 3D Truss Analyzer (with JSON truss construction)
