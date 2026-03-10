@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <cstring>
+#include <vector>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,6 +14,9 @@
 #include "shader.h"
 #include "model.h"
 #include "init.h"
+#include "mesh.h"
+#include "texture.h"
+#include "common_vertices.h"
 
 FreeCamera camera(glm::vec3(0.0f), 5.0f, 0.125f, 45.0f);
 
@@ -48,6 +52,16 @@ int main(int argc, char **argv) {
 
     glEnable(GL_DEPTH_TEST);
 
+    Model diningRoomModel("Glitter/Assets/dining-room/dining-room.obj");
+    Model backpackModel("Glitter/Assets/backpack/backpack.obj");
+
+    std::vector<BasicTexture> boxTextures {
+        { "texture_diffuse", loadTextureFromFile("container2.png", "Glitter/Assets/box"), "container2.png" },
+        { "texture_specular", loadTextureFromFile("container2_specular.png", "Glitter/Assets/box"), "container2_specular.png" },
+    };
+
+    Mesh boxMesh(CommonVertices::CubeVertices, CommonVertices::CubeIndices, boxTextures);
+
     Shader shader("Glitter/Assets");
 
     shader.use();
@@ -61,8 +75,6 @@ int main(int argc, char **argv) {
     shader.setFloat("light.quadratic", 0.032f);
 
     shader.setBool("shouldAttenuate", shouldAttenuate);
-
-    Model model("Glitter/Assets/dining-room/dining-room.obj");
 
     // Rendering Loop
     while (!glfwWindowShouldClose(window)) {
@@ -90,7 +102,9 @@ int main(int argc, char **argv) {
 
         shader.setVec3("viewPos", camera.pos());
         
-        model.draw(shader);
+        boxMesh.draw(shader);
+        //diningRoomModel.draw(shader);
+        //backpackModel.draw(shader);
 
         // Flip Buffers and Draw
         glfwSwapBuffers(window);
