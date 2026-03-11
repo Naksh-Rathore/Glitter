@@ -22,6 +22,9 @@ void Shader::readShaderSources() {
 
     std::string readBuffer;
 
+    m_vertSrc = "";
+    m_fragSrc = "";
+
     while (std::getline(vert, readBuffer))
         m_vertSrc += readBuffer + "\n";
 
