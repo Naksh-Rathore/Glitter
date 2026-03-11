@@ -1,5 +1,6 @@
 To-do:
 
+- Reimplement outline effect with stencil testing
 - Add ImGUI to the project as a debug menu for what models/meshes to render, lighting methods, and more
 
 - Complete Advanced OpenGL section 
