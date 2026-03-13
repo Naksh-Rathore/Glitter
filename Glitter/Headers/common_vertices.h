@@ -54,4 +54,17 @@ struct CommonVertices {
        16, 17, 18, 18, 19, 16,   // top
        20, 21, 22, 22, 23, 20    // bottom
     };
+
+    static inline const std::vector<Vertex> SquareVertices = {
+        {{-0.5f, -0.5f, 0.0f}, {0.f, 0.f, 1.f}, {0.f, 0.f}}, // 0 bottom left
+        {{ 0.5f, -0.5f, 0.0f}, {0.f, 0.f, 1.f}, {1.f, 0.f}}, // 1 bottom right
+        {{ 0.5f,  0.5f, 0.0f}, {0.f, 0.f, 1.f}, {1.f, 1.f}}, // 2 top right
+        {{-0.5f,  0.5f, 0.0f}, {0.f, 0.f, 1.f}, {0.f, 1.f}}, // 3 top left
+    };
+
+    static inline const std::vector<GLuint> SquareIndices = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
 };
