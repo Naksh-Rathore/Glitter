@@ -1,6 +1,6 @@
 To-do:
 
-- Reimplement outline effect with stencil testing
+- Implement mirror effect before moving with stencil buffers (relevant discussion saved on Stack Overflow)
 - Add ImGUI to the project as a debug menu for what models/meshes to render, lighting methods, and more
 
 - Complete Advanced OpenGL section 
