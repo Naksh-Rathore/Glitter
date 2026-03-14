@@ -50,6 +50,8 @@ class FreeCamera {
         void processScrollInput(float yOffset);
 
         glm::vec3 pos() { return m_pos; }
+        glm::vec3 front() { return m_front; }
+        glm::vec3 up() { return m_up; }
 
         float m_camSpeed;
         float m_mouseSensi;
