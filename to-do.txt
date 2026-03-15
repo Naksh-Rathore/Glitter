@@ -1,10 +1,10 @@
 To-do:
 
-- Add ImGUI to the project as a debug menu for what models/meshes to render, lighting methods, and more
-
 - Complete Advanced OpenGL section 
 - Complete Advanced Lighting section
-- Create project 3D Truss Analyzer (with JSON truss construction)
-- Create project Aim Trainer (with 1-2 different modes to train on)
-- Create small 3D engine API
+
 - Create project Minecraft Clone (using that engine if wanted to);
+- Create project Aim Trainer (with 1-2 different modes to train on)
+
+- Create small 3D engine API
+
