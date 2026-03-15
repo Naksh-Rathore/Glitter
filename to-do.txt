@@ -3,8 +3,8 @@ To-do:
 - Complete Advanced OpenGL section 
 - Complete Advanced Lighting section
 
+- Create project portal runner (run from enemies with portals and well lit scenes)
 - Create project Minecraft Clone (using that engine if wanted to);
-- Create project Aim Trainer (with 1-2 different modes to train on)
 
 - Create small 3D engine API
 
