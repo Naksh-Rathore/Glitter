@@ -6,6 +6,12 @@
 
 GLuint loadTextureFromFile(const std::string& path, const std::string& directory);
 
+// Assumes naming convention:
+// texture1.png
+// texture2.png
+// ...
+GLuint loadCubeMapFromDirectory(const std::string& directory, const std::string& imageExtension = ".png", bool generateMipmaps = false);
+
 struct BasicTexture {
     std::string m_textureName;
     GLuint m_id;
