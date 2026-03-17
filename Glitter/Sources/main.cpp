@@ -63,10 +63,10 @@ int main(int argc, char **argv) {
     Mesh boxMesh(CommonVertices::CubeVertices, CommonVertices::CubeIndices, boxTextures);
 
     stbi_set_flip_vertically_on_load(false);
-    GLuint skyboxTexture = loadCubeMapFromDirectory("Glitter/Assets/skybox-shaders/skybox", ".jpg");
+    GLuint skyboxTexture = loadCubeMapFromDirectory("Glitter/Assets/skybox", ".jpg");
     stbi_set_flip_vertically_on_load(true);
 
-    Shader skyboxShader("Glitter/Assets/skybox-shaders");
+    Shader skyboxShader("Glitter/Assets/skybox");
 
     skyboxShader.use();
     skyboxShader.setInt("skybox", 0);
