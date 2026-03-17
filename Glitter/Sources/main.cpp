@@ -148,6 +148,10 @@ int main(int argc, char **argv) {
         
         boxMesh.draw(shader);
 
+        //diningRoomModel.draw(shader);
+        //backpackModel.draw(shader);
+
+
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         skyboxShader.use();
         glm::mat4 view = glm::mat4(glm::mat3(camera.viewMatrix())); // remove translation from the view matrix
@@ -160,24 +164,6 @@ int main(int argc, char **argv) {
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); 
-
-        /*shader.use();
-        
-        shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
-        shader.setMat4("view", camera.viewMatrix());
-
-        shader.setFloat("material.shininess", 32.0f);
-
-        shader.setVec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-        shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-        shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
-
-        shader.setVec3("viewPos", camera.pos());
-        
-        boxMesh.draw(shader);*/
-        //diningRoomModel.draw(shader);
-        //backpackModel.draw(shader);
 
         // Flip Buffers and Draw
         glfwSwapBuffers(window);
