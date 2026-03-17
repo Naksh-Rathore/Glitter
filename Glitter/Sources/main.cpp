@@ -62,6 +62,50 @@ int main(int argc, char **argv) {
 
     Mesh boxMesh(CommonVertices::CubeVertices, CommonVertices::CubeIndices, boxTextures);
 
+    stbi_set_flip_vertically_on_load(false);
+    GLuint skyboxTexture = loadCubeMapFromDirectory("Glitter/Assets/skybox-shaders/skybox", ".jpg");
+    stbi_set_flip_vertically_on_load(true);
+
+    Shader skyboxShader("Glitter/Assets/skybox-shaders");
+
+    skyboxShader.use();
+    skyboxShader.setInt("skybox", 0);
+    glUseProgram(0);
+
+    float skyboxVertices[] = {
+        -1.0f,  1.0f, -1.0f,  -1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,   1.0f,  1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,  -1.0f, -1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
+
+         1.0f, -1.0f, -1.0f,   1.0f, -1.0f,  1.0f,   1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,   1.0f,  1.0f, -1.0f,   1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,   1.0f, -1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,   1.0f,  1.0f, -1.0f,   1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f,  1.0f
+    };
+
+    // skybox VAO
+    unsigned int skyboxVAO, skyboxVBO;
+
+    glGenVertexArrays(1, &skyboxVAO);
+    glGenBuffers(1, &skyboxVBO);
+
+    glBindVertexArray(skyboxVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, skyboxVBO);
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
+    
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
     Shader shader("Glitter/Assets/shaders");
 
     shader.use();
@@ -77,7 +121,7 @@ int main(int argc, char **argv) {
     shader.setBool("shouldAttenuate", shouldAttenuate);
 
     // Rendering Loop
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -103,6 +147,35 @@ int main(int argc, char **argv) {
         shader.setVec3("viewPos", camera.pos());
         
         boxMesh.draw(shader);
+
+        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
+        skyboxShader.use();
+        glm::mat4 view = glm::mat4(glm::mat3(camera.viewMatrix())); // remove translation from the view matrix
+        skyboxShader.setMat4("view", view);
+        skyboxShader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
+        // skybox cube
+        glBindVertexArray(skyboxVAO);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glBindVertexArray(0);
+        glDepthFunc(GL_LESS); 
+
+        /*shader.use();
+        
+        shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
+        shader.setMat4("view", camera.viewMatrix());
+
+        shader.setFloat("material.shininess", 32.0f);
+
+        shader.setVec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
+        shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+        shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+        shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+        shader.setVec3("viewPos", camera.pos());
+        
+        boxMesh.draw(shader);*/
         //diningRoomModel.draw(shader);
         //backpackModel.draw(shader);
 
