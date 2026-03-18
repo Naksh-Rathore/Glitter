@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
 
     Model diningRoomModel("Glitter/Assets/dining-room/dining-room.obj");
-    Model backpackModel("Glitter/Assets/backpack/backpack.obj");
+    Model backpackModel("Glitter/Assets/backpack/backpack.obj", true);
 
     std::vector<BasicTexture> boxTextures {
         { "texture_diffuse", loadTextureFromFile("container2.png", "Glitter/Assets/box"), "container2.png" },
@@ -146,11 +146,10 @@ int main(int argc, char **argv) {
 
         shader.setVec3("viewPos", camera.pos());
         
-        boxMesh.draw(shader);
+        backpackModel.draw(shader);
 
         //diningRoomModel.draw(shader);
         //backpackModel.draw(shader);
-
 
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
         skyboxShader.use();
