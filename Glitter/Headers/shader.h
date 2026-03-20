@@ -23,25 +23,11 @@ class Shader {
         
         void use();
 
-        void setMat4(const char* name, const glm::mat4& mat) const { 
-            glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, &mat[0][0]); 
-        }
-
-        void setVec3(const char* name, const glm::vec3& vec) const { 
-            glUniform3fv(glGetUniformLocation(m_id, name), 1, &vec[0]); 
-        }
-
-        void setFloat(const char* name, float value) const { 
-            glUniform1f(glGetUniformLocation(m_id, name), value); 
-        }
-
-        void setInt(const char* name, int value) const { 
-            glUniform1i(glGetUniformLocation(m_id, name), value); 
-        }
-
-        void setBool(const char* name, bool value) const { 
-            glUniform1i(glGetUniformLocation(m_id, name), static_cast<int>(value)); 
-        }
+        void setMat4(const char* name, const glm::mat4& mat) const { glUniformMatrix4fv(glGetUniformLocation(m_id, name), 1, GL_FALSE, &mat[0][0]); }
+        void setVec3(const char* name, const glm::vec3& vec) const { glUniform3fv(glGetUniformLocation(m_id, name), 1, &vec[0]); }
+        void setFloat(const char* name, float value) const { glUniform1f(glGetUniformLocation(m_id, name), value); }
+        void setInt(const char* name, int value) const { glUniform1i(glGetUniformLocation(m_id, name), value); }
+        void setBool(const char* name, bool value) const { glUniform1i(glGetUniformLocation(m_id, name), static_cast<int>(value)); }
 
     private:
         GLuint m_vert;
