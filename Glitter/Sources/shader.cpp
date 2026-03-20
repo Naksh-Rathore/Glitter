@@ -17,8 +17,8 @@ Shader::Shader(const std::string& assetsDirectoryPath)
 }
 
 void Shader::readShaderSources() {
-    std::ifstream vert(m_assetsDirectoryPath + "/vertex.vs");
-    std::ifstream frag(m_assetsDirectoryPath + "/fragment.fs");
+    std::ifstream vert(m_assetsDirectoryPath + "/vertex.vert");
+    std::ifstream frag(m_assetsDirectoryPath + "/fragment.frag");
 
     std::string readBuffer;
 
