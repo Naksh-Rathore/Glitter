@@ -30,7 +30,7 @@ void Shader::readShaderSources() {
         m_fragSrc += readBuffer + "\n";
 
     if (m_hasGeoShader) {
-        std::ifstream geo(m_assetsDirectoryPath + "/geometry.geo");
+        std::ifstream geo(m_assetsDirectoryPath + "/geometry.geom");
         
         while (std::getline(geo, readBuffer))
             m_geoSrc += readBuffer + "\n";
