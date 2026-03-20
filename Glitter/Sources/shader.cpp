@@ -6,9 +6,10 @@
 #include <fstream>
 #include <iostream>
 
-Shader::Shader(const std::string& assetsDirectoryPath)
+Shader::Shader(const std::string& assetsDirectoryPath, bool hasGeoShader)
     : m_assetsDirectoryPath(assetsDirectoryPath)
 
+    , m_hasGeoShader(hasGeoShader)
     , m_vert(glCreateShader(GL_VERTEX_SHADER))
     , m_frag(glCreateShader(GL_FRAGMENT_SHADER))
     , m_id(glCreateProgram())
@@ -22,14 +23,20 @@ void Shader::readShaderSources() {
 
     std::string readBuffer;
 
-    m_vertSrc = "";
-    m_fragSrc = "";
-
     while (std::getline(vert, readBuffer))
         m_vertSrc += readBuffer + "\n";
 
     while (std::getline(frag, readBuffer))
         m_fragSrc += readBuffer + "\n";
+
+    if (m_hasGeoShader) {
+        std::ifstream geo(m_assetsDirectoryPath + "/geometry.geo");
+        
+        while (std::getline(geo, readBuffer))
+            m_geoSrc += readBuffer + "\n";
+
+        geo.close();
+    }
 
     vert.close();
     frag.close();
@@ -40,6 +47,7 @@ void Shader::linkShader() {
 
     const char *vertSrcPtr = m_vertSrc.c_str(); 
     const char *fragSrcPtr = m_fragSrc.c_str(); 
+    const char *geoSrcPtr = m_geoSrc.c_str();
 
     glShaderSource(m_vert, 1, &vertSrcPtr, nullptr);
     glCompileShader(m_vert);
@@ -51,12 +59,25 @@ void Shader::linkShader() {
     
     glAttachShader(m_id, m_vert);
     glAttachShader(m_id, m_frag);
+
+    if (m_hasGeoShader) {
+        m_geo = glCreateShader(GL_GEOMETRY_SHADER);
+        
+        glShaderSource(m_geo, 1, &geoSrcPtr, nullptr);
+        glCompileShader(m_geo);
+        checkCompileErrors("GEOMETRY", m_geo);
+
+        glAttachShader(m_id, m_geo);
+    }
     
     glLinkProgram(m_id);
     checkCompileErrors("PROGRAM", m_id);
 
     glDeleteShader(m_vert);
     glDeleteShader(m_frag);
+
+    if (m_hasGeoShader)
+        glDeleteShader(m_geo);
 }
 
 void Shader::checkCompileErrors(const std::string& type, GLuint shader) {

@@ -11,8 +11,11 @@ class Shader {
 
         std::string m_vertSrc;
         std::string m_fragSrc;
+        std::string m_geoSrc;
 
-        Shader(const std::string& assetsDirectoryPath);
+        bool m_hasGeoShader;
+
+        Shader(const std::string& assetsDirectoryPath, bool hasGeoShader = false);
 
         Shader(const Shader&) = delete;
         Shader& operator=(const Shader&) = delete;       
@@ -28,10 +31,12 @@ class Shader {
         void setFloat(const char* name, float value) const { glUniform1f(glGetUniformLocation(m_id, name), value); }
         void setInt(const char* name, int value) const { glUniform1i(glGetUniformLocation(m_id, name), value); }
         void setBool(const char* name, bool value) const { glUniform1i(glGetUniformLocation(m_id, name), static_cast<int>(value)); }
+        
 
     private:
         GLuint m_vert;
         GLuint m_frag;
+        GLuint m_geo;
 
         GLuint m_id;
 
