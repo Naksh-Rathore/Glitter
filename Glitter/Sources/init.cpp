@@ -117,6 +117,10 @@ namespace Init {
         glViewport(0, 0, frameBufferWidth, frameBufferHeight);
 
         stbi_set_flip_vertically_on_load(true);
+
+        std::cout << "Vendor:   " << glGetString(GL_VENDOR) << '\n';
+        std::cout << "Renderer: " << glGetString(GL_RENDERER) << '\n';
+        std::cout << "Version:  " << glGetString(GL_VERSION) << '\n';
         
         return window;
     }
