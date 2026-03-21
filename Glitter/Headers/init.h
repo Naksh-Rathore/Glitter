@@ -13,6 +13,6 @@ namespace Init {
     void APIENTRY glDebugOutput(GLenum source, GLenum type, unsigned int id, GLenum severity, 
                             [[maybe_unused]] GLsizei length, const char *message, [[maybe_unused]] const void *userParam);
 
-    GLFWwindow* init(bool shouldFullscreen);
+    GLFWwindow* init(bool shouldFullscreen, bool useDebugContext = true);
 };
 

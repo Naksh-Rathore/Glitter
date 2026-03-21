@@ -32,15 +32,18 @@ int main(int argc, char **argv) {
 
     bool shouldFullscreen = false;
     bool shouldAttenuate = false;
+    bool useDebugContext = true;
 
     for (int i = 1; i < argc; i++) {
         if (std::strcmp(argv[i], "--fullscreen") == 0)
             shouldFullscreen = true;
         else if (std::strcmp(argv[i], "--attenuate") == 0)
             shouldAttenuate = true;
+        else if (std::strcmp(argv[i], "--no-debug") == 0) 
+            useDebugContext = false;
     }
 
-    GLFWwindow *window = Init::init(shouldFullscreen);
+    GLFWwindow *window = Init::init(shouldFullscreen, useDebugContext);
 
     if (window == nullptr) 
         return EXIT_FAILURE;

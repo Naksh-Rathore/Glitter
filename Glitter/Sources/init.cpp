@@ -62,7 +62,7 @@ namespace Init {
         std::cout << std::endl;
     }
 
-    GLFWwindow* init(bool shouldFullscreen) {
+    GLFWwindow* init(bool shouldFullscreen, bool useDebugContext) {
         if (!glfwInit()) {
             std::cerr << "GLFW failed to initialize!\n";
             return nullptr;
@@ -72,7 +72,8 @@ namespace Init {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  
+        if (useDebugContext)
+            glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);  
 
         if (shouldFullscreen) {
             SCREEN_WIDTH = 1920.0f;
@@ -97,16 +98,18 @@ namespace Init {
             return nullptr;
         }
 
-        int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+        if (useDebugContext) {
 
-        if (flags & GL_CONTEXT_FLAG_DEBUG_BIT)
-        {
-            glEnable(GL_DEBUG_OUTPUT);
-            glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
-            glDebugMessageCallback(glDebugOutput, nullptr);
-            glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+            int flags; glGetIntegerv(GL_CONTEXT_FLAGS, &flags);
+
+            if (flags & GL_CONTEXT_FLAG_DEBUG_BIT) {
+                glEnable(GL_DEBUG_OUTPUT);
+                glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS); 
+                glDebugMessageCallback(glDebugOutput, nullptr);
+                glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, nullptr, GL_TRUE);
+            }
+
         }
-
 
         int frameBufferWidth, frameBufferHeight;
 
