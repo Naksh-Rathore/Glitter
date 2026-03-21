@@ -103,9 +103,17 @@ int main(int argc, char **argv) {
     shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
+    shader.setVec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
+
+    shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+    shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
     shader.setFloat("light.constant", 1.0f);
     shader.setFloat("light.linear", 0.09f);
     shader.setFloat("light.quadratic", 0.032f);
+
+    shader.setFloat("material.shininess", 32.0f);
 
     shader.setBool("shouldAttenuate", shouldAttenuate);
 
@@ -125,13 +133,6 @@ int main(int argc, char **argv) {
         
         shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
         shader.setMat4("view", camera.viewMatrix());
-
-        shader.setFloat("material.shininess", 32.0f);
-
-        shader.setVec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
-        shader.setVec3("light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-        shader.setVec3("light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-        shader.setVec3("light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
 
         shader.setVec3("viewPos", camera.pos());
         
