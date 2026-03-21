@@ -84,7 +84,6 @@ int main(int argc, char **argv) {
         -1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f,  1.0f
     };
 
-    // skybox VAO
     unsigned int skyboxVAO, skyboxVBO;
 
     glGenVertexArrays(1, &skyboxVAO);
@@ -120,7 +119,6 @@ int main(int argc, char **argv) {
 
     shader.setBool("shouldAttenuate", shouldAttenuate);
 
-    // Rendering Loop
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
@@ -128,7 +126,6 @@ int main(int argc, char **argv) {
 
         processInput(window);
 
-        // Background Fill Color
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -145,7 +142,7 @@ int main(int argc, char **argv) {
         //backpackModel.draw(shader);
 
         glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-                                 //
+                                 
         skyboxShader.use();
 
         glm::mat4 view = glm::mat4(glm::mat3(camera.viewMatrix())); // remove translation from the view matrix
@@ -153,7 +150,6 @@ int main(int argc, char **argv) {
         skyboxShader.setMat4("view", view);
         skyboxShader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
 
-        // skybox cube
         glBindVertexArray(skyboxVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
@@ -162,7 +158,6 @@ int main(int argc, char **argv) {
         glBindVertexArray(0);
         glDepthFunc(GL_LESS); 
 
-        // Flip Buffers and Draw
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
