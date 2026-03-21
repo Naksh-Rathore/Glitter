@@ -80,6 +80,12 @@ void Mesh::draw(Shader& shader) {
     }  
 
     glBindVertexArray(m_VAO);
+
+    if (!m_offsets.empty())
+        glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei) m_vertices.size(), m_offsets.size());
+    else
+        glDrawElementsInstanced(GL_TRIANGLES, (GLsizei) m_indices.size(), GL_UNSIGNED_INT, 0, m_offsets.size());
+
     
     if (m_indices.empty())
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei) m_vertices.size());
