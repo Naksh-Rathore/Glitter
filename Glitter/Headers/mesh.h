@@ -22,8 +22,9 @@ class Mesh {
         std::vector<Vertex> m_vertices;
         std::vector<unsigned int> m_indices;
         std::vector<BasicTexture> m_textures;
+        std::vector<glm::vec3> m_offsets;
         
-        Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices = {}, const std::vector<BasicTexture>& textures = {});
+        Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices = {}, const std::vector<BasicTexture>& textures = {}, const std::vector<glm::vec3>& offsets = {});
 
         void draw(Shader& shader);
         void uploadMesh();
@@ -32,4 +33,6 @@ class Mesh {
         GLuint m_VBO;
         GLuint m_VAO;
         GLuint m_EBO;
+
+        GLuint m_instanceVBO;
 };

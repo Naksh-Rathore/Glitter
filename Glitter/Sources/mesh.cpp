@@ -9,10 +9,11 @@
 #include "texture.h"
 #include "shader.h"
 
-Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,  const std::vector<BasicTexture>& textures)
+Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,  const std::vector<BasicTexture>& textures, const std::vector<glm::vec3>& offsets)
         : m_vertices(vertices)
         , m_indices(indices)
         , m_textures(textures)
+        , m_offsets(offsets)
 {
     uploadMesh();
 }
@@ -29,9 +30,11 @@ void Mesh::uploadMesh() {
     // vertex positions
     glEnableVertexAttribArray(0);	
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
     // vertex normals
     glEnableVertexAttribArray(1);	
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_normal));
+
     // vertex texture coords
     glEnableVertexAttribArray(2);	
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, m_tex));
