@@ -1,7 +1,5 @@
 To-do:
 
-- Implement instancing support in Mesh class 
-
 - Complete Advanced OpenGL section 
 - Complete Advanced Lighting section
 
