@@ -28,6 +28,7 @@ class Mesh {
 
         void draw(Shader& shader);
         void uploadMesh();
+        void updateInstanceOffsets();
 
     private:
         GLuint m_VBO;

@@ -50,6 +50,10 @@ void Mesh::uploadMesh() {
     glBindVertexArray(0);
 }
 
+void Mesh::updateInstanceOffsets() {
+    // To-do
+}
+
 void Mesh::draw(Shader& shader) {
     shader.use();
 
