@@ -80,16 +80,21 @@ void Mesh::draw(Shader& shader) {
     }  
 
     glBindVertexArray(m_VAO);
-
-    if (!m_offsets.empty())
+    
+    // Render instanced and without EBO
+    if (!m_offsets.empty() && m_indices.empty())
         glDrawArraysInstanced(GL_TRIANGLES, 0, (GLsizei) m_vertices.size(), m_offsets.size());
-    else
+
+    // Render instanced with EBO
+    else if (!m_offsets.empty() && !m_indices.empty())
         glDrawElementsInstanced(GL_TRIANGLES, (GLsizei) m_indices.size(), GL_UNSIGNED_INT, 0, m_offsets.size());
 
-    
-    if (m_indices.empty())
+    // Render uninstanced without EBO
+    if (m_offsets.empty() && m_indices.empty())
         glDrawArrays(GL_TRIANGLES, 0, (GLsizei) m_vertices.size());
-    else
+
+    // Render uninstanced with EBO
+    else if (m_offsets.empty() && !m_indices.empty())
         glDrawElements(GL_TRIANGLES, (GLsizei) m_indices.size(), GL_UNSIGNED_INT, 0);
 
     glBindVertexArray(0);
