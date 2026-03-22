@@ -16,6 +16,9 @@ Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>&
         , m_offsets(offsets)
 {
     uploadMesh();
+
+    if (!m_offsets.empty())
+        updateInstanceOffsets();
 }
 
 void Mesh::uploadMesh() {
@@ -51,7 +54,21 @@ void Mesh::uploadMesh() {
 }
 
 void Mesh::updateInstanceOffsets() {
-    // To-do
+    if (m_offsets.empty())
+        return;
+
+    glGenBuffers(1, &m_instanceVBO);
+
+    glBindVertexArray(m_VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, m_instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, m_offsets.size() * sizeof(glm::vec3), m_offsets.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), (void*)0);
+    glVertexAttribDivisor(3, 1);
+
+    glBindVertexArray(0);
 }
 
 void Mesh::draw(Shader& shader) {
