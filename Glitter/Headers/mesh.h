@@ -8,6 +8,12 @@
 #include "texture.h"
 #include "shader.h"
 
+// Same as Mesh uploadMesh, but functional
+// Used for flexible cases
+// Has C-style arrays since LearnOpenGL provides that most
+// Pass 0 for EBO if no EBO is wanted uploaded since you cannot have a default value for a non-const reference parameter
+void uploadMeshBuffers(float vertices[], std::size_t verticesSize, GLuint &VAO, GLuint& VBO, GLuint &EBO, unsigned int indices[] = {}, std::size_t indicesSize = 0);
+
 struct Vertex {
     glm::vec3 m_pos;
     glm::vec3 m_normal;

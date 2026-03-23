@@ -9,6 +9,31 @@
 #include "texture.h"
 #include "shader.h"
 
+void uploadMeshBuffers(float vertices[], std::size_t verticesSize, GLuint &VAO, GLuint& VBO, GLuint &EBO, unsigned int indices[], std::size_t indicesSize) {
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+  
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, verticesSize, vertices, GL_STATIC_DRAW);  
+
+    // vertex positions
+    glEnableVertexAttribArray(0);	
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+    if (indicesSize == 0)
+        return;
+    
+    glGenBuffers(1, &EBO);
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesSize, indices, GL_STATIC_DRAW);
+
+    glBindVertexArray(0);
+}
+
+
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices,  const std::vector<BasicTexture>& textures, const std::vector<glm::vec3>& offsets)
         : m_vertices(vertices)
         , m_indices(indices)
