@@ -20,7 +20,7 @@ void uploadMeshBuffers(float vertices[], std::size_t verticesSize, GLuint &VAO, 
 
     // vertex positions
     glEnableVertexAttribArray(0);	
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
     if (indicesSize == 0)
         return;
