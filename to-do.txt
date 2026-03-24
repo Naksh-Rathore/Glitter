@@ -1,7 +1,5 @@
 To-do:
 
-- Refactor lighting model from Phong to Blinn-Phong (small internal refactor)
-
 - Complete Advanced Lighting section
 
 - Create project portal runner (run from enemies with portals and well lit scenes)

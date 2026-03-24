@@ -40,9 +40,9 @@ void main() {
     vec3 diffuse = light.diffuse * diff * texture(material.texture_diffuse1, tex).rgb;
 
     vec3 viewDir = normalize(viewPos - fragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);
+    vec3 halfwayDir = normalize(lightDir + viewDir);
 
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+    float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * texture(material.texture_specular1, tex).rgb;
     
     if (shouldAttenuate) {

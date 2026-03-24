@@ -108,7 +108,7 @@ int main(int argc, char **argv) {
     shader.setFloat("light.linear", 0.09f);
     shader.setFloat("light.quadratic", 0.032f);
 
-    shader.setFloat("material.shininess", 32.0f);
+    shader.setFloat("material.shininess", 128.0f);
 
     shader.setBool("shouldAttenuate", shouldAttenuate);
 
