@@ -129,7 +129,7 @@ int main(int argc, char **argv) {
 
         shader.setVec3("viewPos", camera.pos());
         
-        backpackModel.draw(shader);
+        boxMesh.draw(shader);
 
         //diningRoomModel.draw(shader);
         //backpackModel.draw(shader);
