@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <array>
 
-GLuint loadTextureFromFile(const std::string& path, const std::string& directory) {
+GLuint loadTextureFromFile(const std::string& path, const std::string& directory, bool isSRGB) {
     std::string filename = path;
     filename = directory + '/' + filename;
 
@@ -21,6 +21,8 @@ GLuint loadTextureFromFile(const std::string& path, const std::string& directory
         throw std::runtime_error("Texture failed to load at path: " + filename);
 
     GLenum format;
+    GLenum sRgbFormat;
+
     if (nrComponents == 1)
         format = GL_RED;
     else if (nrComponents == 3)
@@ -30,9 +32,17 @@ GLuint loadTextureFromFile(const std::string& path, const std::string& directory
     else
         throw std::runtime_error("Unsupported texture format: " + filename);
 
+    if (isSRGB && format != GL_RED)
+        sRgbFormat = format == GL_RGB ? GL_SRGB : GL_SRGB_ALPHA;
+
     glBindTexture(GL_TEXTURE_2D, textureID);
-    glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format,
-                 GL_UNSIGNED_BYTE, data);
+
+    if (isSRGB && format != GL_RED)
+        glTexImage2D(GL_TEXTURE_2D, 0, sRgbFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+    else
+        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+
+
     glGenerateMipmap(GL_TEXTURE_2D);
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -44,7 +54,7 @@ GLuint loadTextureFromFile(const std::string& path, const std::string& directory
     return textureID;
 }
 
-GLuint loadCubeMapFromDirectory(const std::string& directory, const std::string& imageExtension, bool generateMipmaps) {
+GLuint loadCubeMapFromDirectory(const std::string& directory, const std::string& imageExtension, bool generateMipmaps, bool isSRGB) {
     std::array<std::string, 6> faces = {
         "/right" + imageExtension,
         "/left" + imageExtension,
@@ -69,6 +79,7 @@ GLuint loadCubeMapFromDirectory(const std::string& directory, const std::string&
             throw std::runtime_error("Texture failed to load at path: " + directory + faces.at(i));
 
         GLenum format;
+        GLenum sRgbFormat;
 
         if (nrChannels == 1)
                 format = GL_RED;
@@ -79,7 +90,13 @@ GLuint loadCubeMapFromDirectory(const std::string& directory, const std::string&
         else
             throw std::runtime_error("Unsupported texture format: " + directory + faces.at(i));
 
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        if (isSRGB && format != GL_RED)
+            sRgbFormat = format == GL_RGB ? GL_SRGB : GL_SRGB_ALPHA;
+
+        if (isSRGB && format != GL_RED)
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, sRgbFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+        else
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 
         stbi_image_free(data);
     }
@@ -102,14 +119,14 @@ GLuint loadCubeMapFromDirectory(const std::string& directory, const std::string&
 }
 
 
-Texture::Texture(const std::string& imagePath, const std::string& textureName) 
+Texture::Texture(const std::string& imagePath, const std::string& textureName, bool isSRGB) 
     : m_imagePath(imagePath)
     , m_textureName(textureName)
 {
-    uploadTexture();
+    uploadTexture(isSRGB);
 }
 
-void Texture::uploadTexture() {
+void Texture::uploadTexture(bool isSRGB) {
     glGenTextures(1, &m_id);
     glBindTexture(GL_TEXTURE_2D, m_id);
 
@@ -130,9 +147,28 @@ void Texture::uploadTexture() {
     if (!imageData)
         std::__throw_runtime_error("Could not open image");
     
-    GLenum format = imageNrChannels == 4 ? GL_RGBA : GL_RGB;
+    GLenum format;
+    GLenum sRgbFormat;
 
-    glTexImage2D(GL_TEXTURE_2D, 0, format, imageWidth, imageHeight, 0, format, GL_UNSIGNED_BYTE, imageData);
+    if (imageNrChannels == 1)
+        format = GL_RED;
+    else if (imageNrChannels == 3)
+        format = GL_RGB;
+    else if (imageNrChannels == 4)
+        format = GL_RGBA;
+    else
+        throw std::runtime_error("Unsupported texture format: " + m_imagePath);
+
+    if (isSRGB && format != GL_RED)
+        sRgbFormat = format == GL_RGB ? GL_SRGB : GL_SRGB_ALPHA;
+
+    glBindTexture(GL_TEXTURE_2D, m_id);
+
+    if (isSRGB && format != GL_RED)
+        glTexImage2D(GL_TEXTURE_2D, 0, sRgbFormat, imageWidth, imageHeight, 0, format, GL_UNSIGNED_BYTE, imageData);
+    else
+        glTexImage2D(GL_TEXTURE_2D, 0, format, imageWidth, imageHeight, 0, format, GL_UNSIGNED_BYTE, imageData);
+
     glGenerateMipmap(GL_TEXTURE_2D);
 
     stbi_image_free(imageData);

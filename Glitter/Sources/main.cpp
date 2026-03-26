@@ -54,13 +54,14 @@ int main(int argc, char **argv) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_FRAMEBUFFER_SRGB);
 
     Model diningRoomModel("Glitter/Assets/dining-room/dining-room.obj");
     Model backpackModel("Glitter/Assets/backpack/backpack.obj", true);
 
     std::vector<BasicTexture> boxTextures {
         { "texture_diffuse", loadTextureFromFile("container2.png", "Glitter/Assets/box"), "container2.png" },
-        { "texture_specular", loadTextureFromFile("container2_specular.png", "Glitter/Assets/box"), "container2_specular.png" },
+        { "texture_specular", loadTextureFromFile("container2_specular.png", "Glitter/Assets/box", false), "container2_specular.png" },
     };
 
     Mesh boxMesh(CommonVertices::CubeVertices, CommonVertices::CubeIndices, boxTextures);
