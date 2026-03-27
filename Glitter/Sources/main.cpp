@@ -101,7 +101,7 @@ int main(int argc, char **argv) {
 
     shader.setVec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
 
-    shader.setVec3("light.ambient", glm::vec3(0.22f));
+    shader.setVec3("light.ambient", glm::vec3(0.2f));
     shader.setVec3("light.diffuse", glm::vec3(0.5f));
     shader.setVec3("light.specular", glm::vec3(1.0f));
 
