@@ -31,11 +31,14 @@ void processInput(GLFWwindow *window);
 void setupSkybox(GLuint& VAO, GLuint &VBO, GLuint &EBO, GLuint &texture, Shader& shader);
 void renderSkybox(GLuint VAO, GLuint texture, Shader& shader);
 
-int main(int argc, char **argv) {
+void setupShaderUniforms(Shader& shader);
 
-    bool shouldFullscreen = false;
-    bool shouldAttenuate = false;
-    bool useDebugContext = true;
+bool shouldFullscreen = false;
+bool shouldAttenuate = false;
+bool useDebugContext = true;
+
+
+int main(int argc, char **argv) {
 
     for (int i = 1; i < argc; i++) {
         if (std::strcmp(argv[i], "--fullscreen") == 0)
@@ -59,6 +62,10 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
+    Shader shader("Glitter/Assets/shaders");
+
+    setupShaderUniforms(shader);
+
     Model diningRoomModel("Glitter/Assets/dining-room/dining-room.obj");
     Model backpackModel("Glitter/Assets/backpack/backpack.obj", true);
 
@@ -74,28 +81,6 @@ int main(int argc, char **argv) {
     GLuint skyboxVAO, skyboxVBO, skyboxEBO;
 
     setupSkybox(skyboxVAO, skyboxVBO, skyboxEBO, skyboxTexture, skyboxShader);
-
-    Shader shader("Glitter/Assets/shaders");
-
-    shader.use();
-
-    shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
-    shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
-    shader.setMat4("view", camera.viewMatrix());
-
-    shader.setVec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
-
-    shader.setVec3("light.ambient", glm::vec3(0.2f));
-    shader.setVec3("light.diffuse", glm::vec3(0.5f));
-    shader.setVec3("light.specular", glm::vec3(1.0f));
-
-    shader.setFloat("light.constant", 1.0f);
-    shader.setFloat("light.linear", 0.09f);
-    shader.setFloat("light.quadratic", 0.032f);
-
-    shader.setFloat("material.shininess", 128.0f);
-
-    shader.setBool("shouldAttenuate", shouldAttenuate);
 
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -194,5 +179,29 @@ void renderSkybox(GLuint VAO, GLuint texture, Shader& shader) {
 
     glBindVertexArray(0);
     glDepthFunc(GL_LESS); 
+}
+
+void setupShaderUniforms(Shader& shader) {
+    shader.use();
+
+    shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
+    shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
+    shader.setMat4("view", camera.viewMatrix());
+
+    shader.setVec3("light.position", glm::vec3(0.0f, 1.0f, 0.0f));
+
+    shader.setVec3("light.ambient", glm::vec3(0.2f));
+    shader.setVec3("light.diffuse", glm::vec3(0.5f));
+    shader.setVec3("light.specular", glm::vec3(1.0f));
+
+    shader.setFloat("light.constant", 1.0f);
+    shader.setFloat("light.linear", 0.09f);
+    shader.setFloat("light.quadratic", 0.032f);
+
+    shader.setFloat("material.shininess", 128.0f);
+
+    shader.setBool("shouldAttenuate", shouldAttenuate);
+
+    glUseProgram(0);
 }
 
