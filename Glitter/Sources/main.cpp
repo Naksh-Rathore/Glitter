@@ -28,6 +28,9 @@ void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double
 
 void processInput(GLFWwindow *window);
 
+void setupSkybox(GLuint& VAO, GLuint &VBO, GLuint &EBO, GLuint &texture, Shader& shader);
+void renderSkybox(GLuint VAO, GLuint texture, Shader& shader);
+
 int main(int argc, char **argv) {
 
     bool shouldFullscreen = false;
@@ -66,30 +69,11 @@ int main(int argc, char **argv) {
 
     Mesh boxMesh(CommonVertices::CubeVertices, CommonVertices::CubeIndices, boxTextures);
 
-    stbi_set_flip_vertically_on_load(false);
-    GLuint skyboxTexture = loadCubeMapFromDirectory("Glitter/Assets/skybox", ".jpg");
-    stbi_set_flip_vertically_on_load(true);
-
+    GLuint skyboxTexture;
     Shader skyboxShader("Glitter/Assets/skybox");
-
-    skyboxShader.use();
-    skyboxShader.setInt("skybox", 0);
-    glUseProgram(0);
-
-    float skyboxVertices[] = {
-        -1.0f,  1.0f, -1.0f,  -1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,   1.0f,  1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,  -1.0f, -1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
-         1.0f, -1.0f, -1.0f,   1.0f, -1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f, -1.0f,   1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f, -1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,   1.0f,  1.0f, -1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f,  1.0f
-    };
-
     GLuint skyboxVAO, skyboxVBO, skyboxEBO;
 
-    skyboxEBO = 0;
-
-    uploadMeshBuffers(skyboxVertices, sizeof(skyboxVertices), skyboxVAO, skyboxVBO, skyboxEBO);
+    setupSkybox(skyboxVAO, skyboxVBO, skyboxEBO, skyboxTexture, skyboxShader);
 
     Shader shader("Glitter/Assets/shaders");
 
@@ -135,22 +119,7 @@ int main(int argc, char **argv) {
         //diningRoomModel.draw(shader);
         //backpackModel.draw(shader);
 
-        glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-                                 
-        skyboxShader.use();
-
-        glm::mat4 view = glm::mat4(glm::mat3(camera.viewMatrix())); // remove translation from the view matrix
-                                                                    
-        skyboxShader.setMat4("view", view);
-        skyboxShader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
-
-        glBindVertexArray(skyboxVAO);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glBindVertexArray(0);
-        glDepthFunc(GL_LESS); 
+        renderSkybox(skyboxVAO, skyboxTexture, skyboxShader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -180,5 +149,50 @@ void processInput(GLFWwindow *window) {
 
 void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {
     camera.processScrollInput(yoffset);
+}
+
+void setupSkybox(GLuint& VAO, GLuint &VBO, GLuint &EBO, GLuint &texture, Shader& shader) {
+    shader.use();
+    shader.setInt("skybox", 0);
+    glUseProgram(0);
+
+    float skyboxVertices[] = {
+        -1.0f,  1.0f, -1.0f,  -1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,   1.0f,  1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,  -1.0f, -1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,  -1.0f,  1.0f, -1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,   1.0f, -1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f, -1.0f,   1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,   1.0f, -1.0f,  1.0f,  -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,   1.0f,  1.0f, -1.0f,   1.0f,  1.0f,  1.0f,   1.0f,  1.0f,  1.0f,  -1.0f,  1.0f,  1.0f,  -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f, -1.0f,   1.0f, -1.0f, -1.0f,  -1.0f, -1.0f,  1.0f,   1.0f, -1.0f,  1.0f
+    };
+
+    EBO = 0;
+
+    uploadMeshBuffers(skyboxVertices, sizeof(skyboxVertices), VAO, VBO, EBO);
+
+    stbi_set_flip_vertically_on_load(false);
+    texture = loadCubeMapFromDirectory("Glitter/Assets/skybox", ".jpg");
+    stbi_set_flip_vertically_on_load(true);
+
+}
+
+void renderSkybox(GLuint VAO, GLuint texture, Shader& shader) {
+    glDepthFunc(GL_LEQUAL); 
+                                 
+    shader.use();
+
+    glm::mat4 view = glm::mat4(glm::mat3(camera.viewMatrix())); // remove translation from the view matrix
+                                                                
+    shader.setMat4("view", view);
+    shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
+
+    glBindVertexArray(VAO);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture);
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+    glBindVertexArray(0);
+    glDepthFunc(GL_LESS); 
 }
 
