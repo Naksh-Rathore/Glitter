@@ -62,6 +62,12 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
+    GLuint skyboxTexture;
+    Shader skyboxShader("Glitter/Assets/skybox");
+    GLuint skyboxVAO, skyboxVBO, skyboxEBO;
+
+    setupSkybox(skyboxVAO, skyboxVBO, skyboxEBO, skyboxTexture, skyboxShader);
+
     Shader shader("Glitter/Assets/shaders");
 
     setupShaderUniforms(shader);
@@ -75,12 +81,6 @@ int main(int argc, char **argv) {
     };
 
     Mesh boxMesh(CommonVertices::CubeVertices, CommonVertices::CubeIndices, boxTextures);
-
-    GLuint skyboxTexture;
-    Shader skyboxShader("Glitter/Assets/skybox");
-    GLuint skyboxVAO, skyboxVBO, skyboxEBO;
-
-    setupSkybox(skyboxVAO, skyboxVBO, skyboxEBO, skyboxTexture, skyboxShader);
 
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
