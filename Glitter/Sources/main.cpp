@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    Model diningRoomModel("Glitter/Assets/dining-room/dining-room.obj");
+    Model model("Glitter/Assets/dining-room/dining-room.obj");
 
     Shader shader("Glitter/Assets/shaders");
 
@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
 
         shader.setVec3("viewPos", camera.pos());
 
-        diningRoomModel.draw(shader);        
+        model.draw(shader);        
 
         glfwSwapBuffers(window);
         glfwPollEvents();
