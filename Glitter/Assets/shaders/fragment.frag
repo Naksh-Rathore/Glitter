@@ -45,7 +45,7 @@ void main() {
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
     vec3 specular = light.specular * spec * texture(material.texture_specular1, tex).rgb;
     
-    if (shouldAttenuate) {
+    if (false) {
         float distance = length(light.position - fragPos);
         float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
 
