@@ -1,52 +1,61 @@
 #version 330 core
 
-struct Material {
-    sampler2D texture_diffuse1;
-    sampler2D texture_specular1;
-    float shininess;
-};
-
-struct Light {
-    vec3 direction;
-
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-
-    float constant;
-    float linear;
-    float quadratic;
-};
-
-in vec2 tex;
-in vec3 normal;
-in vec3 fragPos;
-
 out vec4 FragColor;
 
-uniform Material material;
-uniform Light light;
-uniform vec3 viewPos;
+in vec3 FragPos;
+in vec3 Normal;
+in vec4 FragPosLightSpace;
 
-uniform bool shouldAttenuate;
+uniform vec3 lightDir;
+uniform vec3 lightColor;
+uniform vec3 objectColor;
 
-void main() {
-    vec3 ambient = light.ambient * texture(material.texture_diffuse1, tex).rgb;
+uniform float ambientStrength; 
 
-    vec3 norm = normalize(normal);
-    vec3 lightDir = normalize(-light.direction);
+uniform sampler2D shadowMap;
 
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture(material.texture_diffuse1, tex).rgb;
 
-    vec3 viewDir = normalize(viewPos - fragPos);
-    vec3 halfwayDir = normalize(lightDir + viewDir);
+float shadow()
+{
+    vec3 projCoords = FragPosLightSpace.xyz / FragPosLightSpace.w;
+    projCoords = projCoords * 0.5 + 0.5;
 
-    float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * texture(material.texture_specular1, tex).rgb;
+    if(projCoords.z > 1.0 ||
+       projCoords.x < 0.0 || projCoords.x > 1.0 ||
+       projCoords.y < 0.0 || projCoords.y > 1.0)
+        return 0.0;
 
-    vec3 result = ambient + diffuse + specular;
+    vec3 light = normalize(-lightDir);
+    vec3 normal = normalize(Normal);
 
-    FragColor = vec4(result, 1.0f);
+    float bias = 0.0005;
+
+    float shadow = 0.0;
+    vec2 texelSize = 1.0 / textureSize(shadowMap, 0);
+
+    for(int x = -1; x <= 1; ++x)
+    {
+        for(int y = -1; y <= 1; ++y)
+        {
+            float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;
+            shadow += projCoords.z - bias > pcfDepth ? 1.0 : 0.0;
+        }
+    }
+
+    return shadow / 9.0;
 }
 
+void main()
+{
+    vec3 norm = normalize(Normal);
+    vec3 light = normalize(-lightDir);
+
+    float diff = max(dot(norm, light), 0.0);
+    vec3 diffuse = diff * lightColor;
+
+    vec3 ambient = ambientStrength * lightColor;
+
+    vec3 result = (ambient + (1.0 - shadow()) * diffuse) * objectColor;
+
+    FragColor = vec4(result, 1.0);
+}
