@@ -1,11 +1,13 @@
 #version 330 core
 
-layout (location = 0) in vec3 aPos;
-layout (location = 1) in vec3 aNormal;
+layout (location = 0) in vec3 inPos;
+layout (location = 1) in vec3 inNormal;
+layout (location = 2) in vec2 inTex;
 
-out vec3 FragPos;
-out vec3 Normal;
-out vec4 FragPosLightSpace;
+out vec2 tex;
+out vec3 normal;
+out vec3 fragPos;
+out vec4 fragPosLightSpace;
 
 uniform mat4 model;
 uniform mat4 view;
@@ -13,13 +15,13 @@ uniform mat4 projection;
 
 uniform mat4 lightSpaceMatrix;
 
-void main()
-{
-    FragPos = vec3(model * vec4(aPos, 1.0));
-    FragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
-    
-    Normal = mat3(transpose(inverse(model))) * aNormal;
+void main() {
+    gl_Position = projection * view * model * vec4(inPos, 1.0);
 
-    gl_Position = projection * view * vec4(FragPos, 1.0);
+    tex = inTex;
+    normal = mat3(transpose(inverse(model))) * inNormal; 
+
+    fragPos = vec3(model * vec4(inPos, 1.0));
+    fragPosLightSpace = lightSpaceMatrix * vec4(fragPos, 1.0);
 }
 

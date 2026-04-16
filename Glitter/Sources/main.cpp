@@ -10,6 +10,7 @@
 
 #include "camera.h"
 #include "shader.h"
+#include "model.h"
 #include "init.h"
 
 FreeCamera camera(glm::vec3(0.0f), 5.0f, 0.125f, 45.0f);
@@ -24,12 +25,7 @@ void processInput(GLFWwindow *window);
 
 void setShaderUniforms(Shader& shader);
 
-// Defaults to a cube but can be switched to plane vertices
-void setupPolygon(GLuint &VAO, GLuint &VBO, bool isPlane = false);
-
-void renderScene(GLuint cubeVAO, GLuint planeVAO, Shader &shader);
-
-glm::vec3 lightDir = glm::normalize(glm::vec3(4.0f, -4.0f, 2.0f));
+glm::vec3 lightDir = glm::normalize(glm::vec3(50.0f, -75.0f, 100.0f));
 
 int main(int argc, char **argv) {
 
@@ -56,19 +52,13 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    GLuint cubeVAO, cubeVBO;
-    setupPolygon(cubeVAO, cubeVBO);
-
-    GLuint planeVAO, planeVBO;
-    setupPolygon(planeVAO, planeVBO, true);
-
     Shader shader("Glitter/Assets/shaders");
 
     shader.use();
     setShaderUniforms(shader);
     glUseProgram(0);
 
-    const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
+    const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 1024;
 
     GLuint depthMapFbo;
 
@@ -96,7 +86,7 @@ int main(int argc, char **argv) {
 
     Shader depthMapShader("Glitter/Assets/depth-map-shaders");
 
-
+    Model model("Glitter/Assets/dining-room/dining-room.obj");
 
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -136,9 +126,12 @@ int main(int argc, char **argv) {
         depthMapShader.use();
         depthMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
 
+        glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
+        depthMapShader.setMat4("model", modelMat);
+
         glCullFace(GL_FRONT);
 
-        renderScene(cubeVAO, planeVAO, depthMapShader);
+        model.draw(depthMapShader);
 
         glCullFace(GL_BACK);
 
@@ -151,10 +144,17 @@ int main(int argc, char **argv) {
         glViewport(0, 0, fbWidth, fbHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, depthMap);
 
-        renderScene(cubeVAO, planeVAO, shader);
+        shader.use();
+
+        shader.setVec3("viewPos", camera.pos());
+
+        shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
+        shader.setMat4("view", camera.viewMatrix());
+
+        model.draw(shader);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -164,126 +164,27 @@ int main(int argc, char **argv) {
     return EXIT_SUCCESS;
 }
 
-void renderScene(GLuint cubeVAO, GLuint planeVAO, Shader &shader) {
-    shader.use();
-
-    shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), (float) SCREEN_WIDTH / (float) SCREEN_HEIGHT, 0.1f, 100.0f));
-    shader.setMat4("view", camera.viewMatrix());
-
-    glm::mat4 model;
-
-    // Ground plane
-    glBindVertexArray(planeVAO);
-    model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(10.0f));
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, -0.01f));
-    shader.setMat4("model", model);
-
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-
-    glBindVertexArray(0);
-
-    glBindVertexArray(cubeVAO);
-    
-    model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(0.5f));
-    model = glm::translate(model, glm::vec3(0.0f, 1.5f, 0.0));
-                                                                
-    shader.setMat4("model", model);
-
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(0.5f));
-    model = glm::translate(model, glm::vec3(2.0f, 0.0f, 1.0));
-
-    shader.setMat4("model", model);
-
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    model = glm::mat4(1.0f);
-    model = glm::scale(model, glm::vec3(0.25));
-    model = glm::rotate(model, glm::radians(60.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-    model = glm::translate(model, glm::vec3(-1.0f, 0.0f, 2.0));
-    
-    shader.setMat4("model", model);
-
-    glDrawArrays(GL_TRIANGLES, 0, 36);
-
-    glBindVertexArray(0);
-    glUseProgram(0);
-}
-
-// Defaults to a cube but can be switched to plane vertices
-void setupPolygon(GLuint& VAO, GLuint &VBO, bool isPlane) {
-    GLfloat cubeVertices[] = {
-        // +Z
-        -0.5,-0.5, 0.5, 0,0,1,  0.5,-0.5, 0.5, 0,0,1,  0.5, 0.5, 0.5, 0,0,1,
-         0.5, 0.5, 0.5, 0,0,1, -0.5, 0.5, 0.5, 0,0,1, -0.5,-0.5, 0.5, 0,0,1,
-
-        // -Z
-        -0.5,-0.5,-0.5, 0,0,-1, -0.5, 0.5,-0.5, 0,0,-1,  0.5, 0.5,-0.5, 0,0,-1,
-         0.5, 0.5,-0.5, 0,0,-1,  0.5,-0.5,-0.5, 0,0,-1, -0.5,-0.5,-0.5, 0,0,-1,
-
-        // -X
-        -0.5, 0.5, 0.5,-1,0,0, -0.5, 0.5,-0.5,-1,0,0, -0.5,-0.5,-0.5,-1,0,0,
-        -0.5,-0.5,-0.5,-1,0,0, -0.5,-0.5, 0.5,-1,0,0, -0.5, 0.5, 0.5,-1,0,0,
-
-        // +X
-         0.5, 0.5, 0.5, 1,0,0,  0.5,-0.5,-0.5, 1,0,0,  0.5, 0.5,-0.5, 1,0,0,
-         0.5,-0.5,-0.5, 1,0,0,  0.5, 0.5, 0.5, 1,0,0,  0.5,-0.5, 0.5, 1,0,0,
-
-        // +Y
-        -0.5, 0.5,-0.5, 0,1,0, -0.5, 0.5, 0.5, 0,1,0,  0.5, 0.5, 0.5, 0,1,0,
-         0.5, 0.5, 0.5, 0,1,0,  0.5, 0.5,-0.5, 0,1,0, -0.5, 0.5,-0.5, 0,1,0,
-
-        // -Y
-        -0.5,-0.5,-0.5, 0,-1,0,  0.5,-0.5,-0.5, 0,-1,0,  0.5,-0.5, 0.5, 0,-1,0,
-         0.5,-0.5, 0.5, 0,-1,0, -0.5,-0.5, 0.5, 0,-1,0, -0.5,-0.5,-0.5, 0,-1,0
-};
-
-    GLfloat planeVertices[] = {
-        // plane (z = 0, normal +Z)
-        -0.5,-0.5,0,  0,0,1,   0.5,-0.5,0,  0,0,1,   0.5, 0.5,0,  0,0,1,
-         0.5, 0.5,0,  0,0,1,  -0.5, 0.5,0,  0,0,1,  -0.5,-0.5,0,  0,0,1
-    };
-
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    
-    if (!isPlane)
-        glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW);
-    else
-        glBufferData(GL_ARRAY_BUFFER, sizeof(planeVertices), planeVertices, GL_STATIC_DRAW);
- 
-    // Position
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);	
-
-    // Normal
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
-
-    glBindVertexArray(0);
-}
 
 void setShaderUniforms(Shader& shader) {
     shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
     shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
+    
+    shader.setVec3("light.direction", lightDir); 
 
-    shader.setVec3("lightDir", lightDir); 
-    shader.setVec3("lightColor", glm::vec3(1.0f));
-    shader.setVec3("objectColor", glm::vec3(0.8f, 0.3f, 0.3f));
+    shader.setVec3("light.ambient", glm::vec3(0.22f));
+    shader.setVec3("light.diffuse", glm::vec3(0.5f));
+    shader.setVec3("light.specular", glm::vec3(1.0f));
+
+    shader.setFloat("light.constant", 1.0f);
+    shader.setFloat("light.linear", 0.09f);
+    shader.setFloat("light.quadratic", 0.032f);
+
+    shader.setFloat("material.shininess", 128.0f);
 
     shader.setFloat("ambientStrength", 0.15f);
 
-    shader.setInt("shadowMap", 0);
+    shader.setInt("shadowMap", 2);
 }
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {
