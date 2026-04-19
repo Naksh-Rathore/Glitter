@@ -2,8 +2,11 @@ To-do:
 
 - Complete Advanced Lighting section
 
-- Create project portal runner (run from enemies with portals and well lit scenes)
-- Create project Minecraft Clone (using that engine if wanted to);
+- Create 2D game engine to get a sense of engine architecture
 
-- Create small 3D engine API
+- Create small 3D game engine
+- Create project portal runner in the engine (run from enemies with portals and well lit scenes) 
+
+- Create decently sized 3D game engine
+- Build whatever I feel like building in the engine
 
