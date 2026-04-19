@@ -27,6 +27,8 @@ void setShaderUniforms(Shader& shader);
 
 glm::vec3 lightDir = glm::normalize(glm::vec3(50.0f, -75.0f, 100.0f));
 
+int shadowMapTextureUnit;
+
 int main(int argc, char **argv) {
 
     bool shouldFullscreen = false;
@@ -52,11 +54,16 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
+    Model model("Glitter/Assets/dining-room/dining-room.obj");
+    shadowMapTextureUnit = model.m_loadedTextures.size();
+
     Shader shader("Glitter/Assets/shaders");
 
     shader.use();
     setShaderUniforms(shader);
     glUseProgram(0);
+
+    Shader depthMapShader("Glitter/Assets/depth-map-shaders");
 
     const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 1024;
 
@@ -73,8 +80,8 @@ int main(int argc, char **argv) {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    float borderColor[] = {1.0, 1.0, 1.0, 1.0};
+    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
 
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFbo);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
@@ -84,9 +91,6 @@ int main(int argc, char **argv) {
 
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    Shader depthMapShader("Glitter/Assets/depth-map-shaders");
-
-    Model model("Glitter/Assets/dining-room/dining-room.obj");
 
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -144,7 +148,7 @@ int main(int argc, char **argv) {
         glViewport(0, 0, fbWidth, fbHeight);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glActiveTexture(GL_TEXTURE2);
+        glActiveTexture(GL_TEXTURE0 + shadowMapTextureUnit);
         glBindTexture(GL_TEXTURE_2D, depthMap);
 
         shader.use();
@@ -184,7 +188,7 @@ void setShaderUniforms(Shader& shader) {
 
     shader.setFloat("ambientStrength", 0.15f);
 
-    shader.setInt("shadowMap", 2);
+    shader.setInt("shadowMap", shadowMapTextureUnit);
 }
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {
