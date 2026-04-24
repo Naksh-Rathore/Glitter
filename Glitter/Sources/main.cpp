@@ -180,13 +180,7 @@ void setShaderUniforms(Shader& shader) {
     shader.setVec3("light.diffuse", glm::vec3(0.5f));
     shader.setVec3("light.specular", glm::vec3(1.0f));
 
-    shader.setFloat("light.constant", 1.0f);
-    shader.setFloat("light.linear", 0.09f);
-    shader.setFloat("light.quadratic", 0.032f);
-
     shader.setFloat("material.shininess", 128.0f);
-
-    shader.setFloat("ambientStrength", 0.15f);
 
     shader.setInt("shadowMap", shadowMapTextureUnit);
 }
