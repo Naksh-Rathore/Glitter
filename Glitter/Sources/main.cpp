@@ -55,8 +55,6 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    Shader shader("Glitter/Assets/shaders");
-
     float wallVertices[] = {
         // Positions          // Normals           // Texture Coords
         -0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom-left
@@ -67,7 +65,6 @@ int main(int argc, char **argv) {
          0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,   // Top-right (repeated)
         -0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 1.0f    // Top-left
     };
-
 
     GLuint wallVBO, wallVAO;
 
@@ -90,6 +87,8 @@ int main(int argc, char **argv) {
 
     GLuint diffuseTexture = loadTextureFromFile("diffuse.png", "Glitter/Assets/wall");
     GLuint normalTexture = loadTextureFromFile("normal.png", "Glitter/Assets/wall");
+
+    Shader shader("Glitter/Assets/shaders");
 
     shader.use();
     setShaderUniforms(shader);
