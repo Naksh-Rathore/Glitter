@@ -10,8 +10,8 @@
 
 #include "camera.h"
 #include "shader.h"
-#include "model.h"
 #include "init.h"
+#include "texture.h"
 
 FreeCamera camera(glm::vec3(0.0f), 5.0f, 0.125f, 45.0f);
 
@@ -25,9 +25,10 @@ void processInput(GLFWwindow *window);
 
 void setShaderUniforms(Shader& shader);
 
-glm::vec3 lightDir = glm::normalize(glm::vec3(50.0f, -75.0f, 100.0f));
+glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 0.25f);
 
-int shadowMapTextureUnit;
+bool normalMappingEnabled = false;
+bool normalMappingKeyPressed = false;
 
 int main(int argc, char **argv) {
 
@@ -54,43 +55,45 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
-    Model model("Glitter/Assets/dining-room/dining-room.obj");
-    shadowMapTextureUnit = model.m_loadedTextures.size();
-
     Shader shader("Glitter/Assets/shaders");
+
+    float wallVertices[] = {
+        // Positions          // Normals           // Texture Coords
+        -0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom-left
+         0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   1.0f, 0.0f,   // Bottom-right
+         0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,   // Top-right
+        
+        -0.5f, -0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // Bottom-left (repeated)
+         0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   1.0f, 1.0f,   // Top-right (repeated)
+        -0.5f,  0.5f,  0.0f,  0.0f, 0.0f, 1.0f,   0.0f, 1.0f    // Top-left
+    };
+
+
+    GLuint wallVBO, wallVAO;
+
+    glGenVertexArrays(1, &wallVAO);
+    glGenBuffers(1, &wallVBO);
+
+    glBindVertexArray(wallVAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, wallVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(wallVertices), wallVertices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) 0);
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+
+    GLuint diffuseTexture = loadTextureFromFile("diffuse.png", "Glitter/Assets/wall");
+    GLuint normalTexture = loadTextureFromFile("normal.png", "Glitter/Assets/wall");
 
     shader.use();
     setShaderUniforms(shader);
     glUseProgram(0);
-
-    Shader depthMapShader("Glitter/Assets/depth-map-shaders");
-
-    const unsigned int SHADOW_WIDTH = 4096, SHADOW_HEIGHT = 1024;
-
-    GLuint depthMapFbo;
-
-    glGenFramebuffers(1, &depthMapFbo);
-
-    GLuint depthMap;
-    
-    glGenTextures(1, &depthMap);
-    glBindTexture(GL_TEXTURE_2D, depthMap);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, SHADOW_WIDTH, SHADOW_HEIGHT, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    float borderColor[] = {1.0, 1.0, 1.0, 1.0};
-    glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, depthMapFbo);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthMap, 0);
-
-    glDrawBuffer(GL_NONE);
-    glReadBuffer(GL_NONE);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
@@ -102,63 +105,30 @@ int main(int argc, char **argv) {
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
-        glBindFramebuffer(GL_FRAMEBUFFER, depthMapFbo);
-
-        glClear(GL_DEPTH_BUFFER_BIT);
-
-        glm::vec3 lightPos = -lightDir * 10.0f;
-
-        glm::mat4 lightView = glm::lookAt(
-            lightPos,
-            glm::vec3(0.0f),   // scene center
-            glm::vec3(0.0f, 1.0f, 0.0f)
-        );
-
-        glm::mat4 lightProj = glm::ortho(
-            -10.0f, 10.0f,
-            -10.0f, 10.0f,
-            -10.0f, 20.0f
-        );
-
-        glm::mat4 lightSpaceMatrix = lightProj * lightView;
-
-        shader.use();
-        shader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-        glUseProgram(0);
-
-        depthMapShader.use();
-        depthMapShader.setMat4("lightSpaceMatrix", lightSpaceMatrix);
-
-        glm::mat4 modelMat = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f));
-        depthMapShader.setMat4("model", modelMat);
-
-        glCullFace(GL_FRONT);
-
-        model.draw(depthMapShader);
-
-        glCullFace(GL_BACK);
-
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-        int fbWidth, fbHeight;
-
-        glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
-
-        glViewport(0, 0, fbWidth, fbHeight);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glActiveTexture(GL_TEXTURE0 + shadowMapTextureUnit);
-        glBindTexture(GL_TEXTURE_2D, depthMap);
-
         shader.use();
 
         shader.setVec3("viewPos", camera.pos());
 
+        shader.setMat4("model", glm::mat4(1.0f));
         shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
         shader.setMat4("view", camera.viewMatrix());
 
-        model.draw(shader);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, diffuseTexture);
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, normalTexture);
+
+        shader.setInt("material.texture_diffuse1", 0);
+        shader.setInt("material.texture_normal1", 1);
+
+        shader.setBool("shouldNormalMap", normalMappingEnabled);
+
+        glBindVertexArray(wallVAO);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+
+        glBindVertexArray(0);
+        glUseProgram(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -170,19 +140,17 @@ int main(int argc, char **argv) {
 
 
 void setShaderUniforms(Shader& shader) {
-    shader.setMat4("model", glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -2.0f)));
+    shader.setMat4("model", glm::mat4(1.0f));
     shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
     
-    shader.setVec3("light.direction", lightDir); 
+    shader.setVec3("light.position", lightPos); 
 
     shader.setVec3("light.ambient", glm::vec3(0.22f));
     shader.setVec3("light.diffuse", glm::vec3(0.5f));
     shader.setVec3("light.specular", glm::vec3(1.0f));
 
-    shader.setFloat("material.shininess", 128.0f);
-
-    shader.setInt("shadowMap", shadowMapTextureUnit);
+    shader.setFloat("material.shininess", 32.0f);
 }
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {
@@ -201,6 +169,15 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
+    
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !normalMappingKeyPressed) {
+        normalMappingEnabled = !normalMappingEnabled;
+        normalMappingKeyPressed = true;
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) 
+        normalMappingKeyPressed = false;
+    
 }
 
 void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {
