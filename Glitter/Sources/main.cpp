@@ -55,6 +55,8 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_FRAMEBUFFER_SRGB);
 
+    // Usually model loaders (Assimp, tinyGLTF) compute tangent & bitangent for us
+
     glm::vec3 pos1(-1.0,  1.0, 0.0);
     glm::vec3 pos2(-1.0, -1.0, 0.0);
     glm::vec3 pos3( 1.0, -1.0, 0.0);
