@@ -162,10 +162,7 @@ int main(int argc, char **argv) {
 
         shader.setVec3("viewPos", camera.pos());
 
-        glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * -0.1f, glm::normalize(glm::vec3(1.0, 0.0, 1.0)));
-
-        shader.setMat4("model", model);
+        shader.setMat4("model", glm::mat4(1.0f));
         shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
         shader.setMat4("view", camera.viewMatrix());
 
