@@ -139,8 +139,8 @@ int main(int argc, char **argv) {
     glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, 14 * sizeof(float), (void*)(11 * sizeof(float)));
     glEnableVertexAttribArray(4);
 
-    GLuint diffuseTexture = loadTextureFromFile("brick_diffuse.jpg", "Glitter/Assets/wall");
-    GLuint normalTexture = loadTextureFromFile("brick_normal.png", "Glitter/Assets/wall", false);
+    GLuint diffuseTexture = loadTextureFromFile("diffuse.jpg", "Glitter/Assets/wall");
+    GLuint normalTexture = loadTextureFromFile("normal.jpg", "Glitter/Assets/wall", false);
 
     Shader shader("Glitter/Assets/shaders");
 
