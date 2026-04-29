@@ -9,7 +9,10 @@ add_subdirectory(Glitter/Vendor/glfw)
 option(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
 option(ASSIMP_BUILD_SAMPLES OFF)
 option(ASSIMP_BUILD_TESTS OFF)
+
 add_subdirectory(Glitter/Vendor/assimp)
+
+target_compile_options(assimp PRIVATE -Wno-error)
 
 if(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
