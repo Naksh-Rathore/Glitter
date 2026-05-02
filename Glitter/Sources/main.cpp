@@ -27,9 +27,6 @@ void setShaderUniforms(Shader& shader);
 
 glm::vec3 lightPos = glm::vec3(0.0f, 0.0f, 0.25f);
 
-bool normalMappingEnabled = false;
-bool normalMappingKeyPressed = false;
-
 int main(int argc, char **argv) {
 
     bool shouldFullscreen = false;
@@ -175,8 +172,6 @@ int main(int argc, char **argv) {
         shader.setInt("material.texture_diffuse1", 0);
         shader.setInt("material.texture_normal1", 1);
 
-        shader.setBool("shouldNormalMap", normalMappingEnabled);
-
         glBindVertexArray(wallVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
@@ -222,15 +217,6 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
-    
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !normalMappingKeyPressed) {
-        normalMappingEnabled = !normalMappingEnabled;
-        normalMappingKeyPressed = true;
-    }
-
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE) 
-        normalMappingKeyPressed = false;
-    
 }
 
 void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {

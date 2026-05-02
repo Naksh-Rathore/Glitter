@@ -32,12 +32,10 @@ uniform bool shouldNormalMap;
 void main() {
     vec3 norm = vec3(0.0, 0.0, 1.0);
 
-    if (shouldNormalMap) {
-        norm = texture(material.texture_normal1, tex).rgb;
+    norm = texture(material.texture_normal1, tex).rgb;
 
-        // transform normal vector to range [-1,1]
-        norm = normalize(norm * 2.0 - 1.0);   
-    }
+    // transform normal vector to range [-1,1]
+    norm = normalize(norm * 2.0 - 1.0);   
 
     vec3 ambient = light.ambient * texture(material.texture_diffuse1, tex).rgb;
 
