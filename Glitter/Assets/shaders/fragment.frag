@@ -27,12 +27,8 @@ uniform Material material;
 uniform Light light;
 uniform vec3 viewPos;
 
-uniform bool shouldNormalMap;
-
 void main() {
-    vec3 norm = vec3(0.0, 0.0, 1.0);
-
-    norm = texture(material.texture_normal1, tex).rgb;
+    vec3 norm = texture(material.texture_normal1, tex).rgb;
 
     // transform normal vector to range [-1,1]
     norm = normalize(norm * 2.0 - 1.0);   
