@@ -138,6 +138,8 @@ int main(int argc, char **argv) {
 
     GLuint diffuseTexture = loadTextureFromFile("diffuse.jpg", "Glitter/Assets/wall");
     GLuint normalTexture = loadTextureFromFile("normal.jpg", "Glitter/Assets/wall", false);
+    GLuint heightTexture = loadTextureFromFile("height.jpg", "Glitter/Assets/wall", false);
+
 
     Shader shader("Glitter/Assets/shaders");
 
@@ -169,8 +171,12 @@ int main(int argc, char **argv) {
         glActiveTexture(GL_TEXTURE1);
         glBindTexture(GL_TEXTURE_2D, normalTexture);
 
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, heightTexture);
+
         shader.setInt("material.texture_diffuse1", 0);
         shader.setInt("material.texture_normal1", 1);
+        shader.setInt("material.texture_height1", 2);
 
         glBindVertexArray(wallVAO);
         glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -199,6 +205,8 @@ void setShaderUniforms(Shader& shader) {
     shader.setVec3("light.specular", glm::vec3(1.0f));
 
     shader.setFloat("material.shininess", 32.0f);
+
+    shader.setFloat("heightScale", 0.1f);
 }
 
 void mouseCallback([[maybe_unused]] GLFWwindow* window, double xposIn, double yposIn) {

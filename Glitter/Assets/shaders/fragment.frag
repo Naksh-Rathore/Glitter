@@ -3,6 +3,7 @@
 struct Material {
     sampler2D texture_diffuse1;
     sampler2D texture_normal1;
+    sampler2D texture_height1;
     float shininess;
 };
 
@@ -27,20 +28,28 @@ uniform Material material;
 uniform Light light;
 uniform vec3 viewPos;
 
+uniform float heightScale;
+
+vec2 parallaxMapping(vec2 tex, vec3 viewDir) {
+    float height =  texture(material.texture_height1, tex).r;     
+    return tex - viewDir.xy * (height * heightScale);
+}
+
 void main() {
-    vec3 norm = texture(material.texture_normal1, fs_in.tex).rgb;
+    vec3 viewDir = normalize(fs_in.tangViewPos - fs_in.tangFragPos);
+    vec2 tex = parallaxMapping(fs_in.tex,  viewDir);
 
+    vec3 norm = texture(material.texture_normal1, tex).rgb;
     // transform normal vector to range [-1,1]
-    norm = normalize(norm * 2.0 - 1.0);   
+    norm = normalize(norm * 2.0 - 1.0); 
 
-    vec3 ambient = light.ambient * texture(material.texture_diffuse1, fs_in.tex).rgb;
+    vec3 ambient = light.ambient * texture(material.texture_diffuse1, tex).rgb;
 
     vec3 lightDir = normalize(fs_in.tangLightPos - fs_in.tangFragPos);
 
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture(material.texture_diffuse1, fs_in.tex).rgb;
+    vec3 diffuse = light.diffuse * diff * texture(material.texture_diffuse1, tex).rgb;
 
-    vec3 viewDir = normalize(fs_in.tangViewPos - fs_in.tangFragPos);
     vec3 halfwayDir = normalize(lightDir + viewDir);
 
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
