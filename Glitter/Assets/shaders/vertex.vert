@@ -14,12 +14,12 @@ struct Light {
     vec3 specular;
 };
 
-out vec2 tex;
-out vec3 normal;
-out vec3 fragPos;
-out vec3 tangLightPos;
-out vec3 tangFragPos;
-out vec3 tangViewPos;
+out VS_OUT {
+    vec2 tex;
+    vec3 tangLightPos;
+    vec3 tangViewPos;
+    vec3 tangFragPos;
+} vs_out;
 
 uniform Light light;
 uniform vec3 viewPos;
@@ -31,10 +31,9 @@ uniform mat4 projection;
 void main() {
     gl_Position = projection * view * model * vec4(inPos, 1.0);
 
-    tex = inTex;
-    normal = mat3(transpose(inverse(model))) * inNormal; 
+    vs_out.tex = inTex;
 
-    fragPos = vec3(model * vec4(inPos, 1.0));
+    vec3 fragPos = vec3(model * vec4(inPos, 1.0));
 
     mat3 normalMatrix = transpose(inverse(mat3(model)));
 
@@ -46,8 +45,8 @@ void main() {
 
     mat3 TBN = transpose(mat3(T, B, N));
 
-    tangLightPos = TBN * light.position;
-    tangFragPos = TBN * fragPos;
-    tangViewPos = TBN * viewPos;
+    vs_out.tangLightPos = TBN * light.position;
+    vs_out.tangFragPos = TBN * fragPos;
+    vs_out.tangViewPos = TBN * viewPos;
 }
 

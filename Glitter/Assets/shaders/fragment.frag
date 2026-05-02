@@ -14,12 +14,12 @@ struct Light {
     vec3 specular;
 };
 
-in vec2 tex;
-in vec3 normal;
-in vec3 fragPos;
-in vec3 tangLightPos;
-in vec3 tangFragPos;
-in vec3 tangViewPos;
+in VS_OUT {
+    vec2 tex;
+    vec3 tangLightPos;
+    vec3 tangViewPos;
+    vec3 tangFragPos;
+} fs_in;
 
 out vec4 FragColor;
 
@@ -28,19 +28,19 @@ uniform Light light;
 uniform vec3 viewPos;
 
 void main() {
-    vec3 norm = texture(material.texture_normal1, tex).rgb;
+    vec3 norm = texture(material.texture_normal1, fs_in.tex).rgb;
 
     // transform normal vector to range [-1,1]
     norm = normalize(norm * 2.0 - 1.0);   
 
-    vec3 ambient = light.ambient * texture(material.texture_diffuse1, tex).rgb;
+    vec3 ambient = light.ambient * texture(material.texture_diffuse1, fs_in.tex).rgb;
 
-    vec3 lightDir = normalize(tangLightPos - tangFragPos);
+    vec3 lightDir = normalize(fs_in.tangLightPos - fs_in.tangFragPos);
 
     float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.diffuse * diff * texture(material.texture_diffuse1, tex).rgb;
+    vec3 diffuse = light.diffuse * diff * texture(material.texture_diffuse1, fs_in.tex).rgb;
 
-    vec3 viewDir = normalize(tangViewPos - tangFragPos);
+    vec3 viewDir = normalize(fs_in.tangViewPos - fs_in.tangFragPos);
     vec3 halfwayDir = normalize(lightDir + viewDir);
 
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
