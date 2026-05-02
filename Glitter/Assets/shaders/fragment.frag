@@ -52,7 +52,15 @@ vec2 parallaxMapping(vec2 tex, vec3 viewDir) {
         currentLayerDepth += layerDepth;
     }
 
-    return currentTexCoords;
+    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
+
+    float beforeDepth = texture(material.texture_height1, prevTexCoords).r - currentLayerDepth + layerDepth;
+    float afterDepth = currentDepthMapValue - currentLayerDepth;
+    
+    float weight = afterDepth / (afterDepth - beforeDepth);
+    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
+
+    return finalTexCoords;
 }
 
 void main() {
