@@ -39,6 +39,10 @@ void main() {
     vec3 viewDir = normalize(fs_in.tangViewPos - fs_in.tangFragPos);
     vec2 tex = parallaxMapping(fs_in.tex,  viewDir);
 
+    if(tex.x > 1.0 || tex.y > 1.0 || tex.x < 0.0 || tex.y < 0.0)
+        discard;
+
+
     vec3 norm = texture(material.texture_normal1, tex).rgb;
     // transform normal vector to range [-1,1]
     norm = normalize(norm * 2.0 - 1.0); 
