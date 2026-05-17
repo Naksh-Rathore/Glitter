@@ -2,25 +2,25 @@
 
 struct Material {
     sampler2D texture_diffuse1;
-    sampler2D texture_normal1;
-    sampler2D texture_height1;
+    sampler2D texture_specular1;
     float shininess;
 };
 
 struct Light {
-    vec3 position;
+    vec3 direction;
 
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
-in VS_OUT {
-    vec2 tex;
-    vec3 tangLightPos;
-    vec3 tangViewPos;
-    vec3 tangFragPos;
-} fs_in;
+in vec2 tex;
+in vec3 normal;
+in vec3 fragPos;
 
 out vec4 FragColor;
 
@@ -28,67 +28,25 @@ uniform Material material;
 uniform Light light;
 uniform vec3 viewPos;
 
-uniform float heightScale;
-
-vec2 parallaxMapping(vec2 tex, vec3 viewDir) {
-    
-    const float minLayers = 8.0;
-    const float maxLayers = 32.0;
-
-    float numLayers = mix(maxLayers, minLayers, max(dot(vec3(0.0, 0.0, 1.0), viewDir), 0.0));
-
-    float layerDepth = 1.0 / numLayers;
-    float currentLayerDepth = 0.0;
-
-    vec2 P = viewDir.xy * heightScale; 
-    vec2 deltaTexCoords = P / numLayers;
-    
-    vec2 currentTexCoords = tex;
-    float currentDepthMapValue = texture(material.texture_height1, currentTexCoords).r;
-
-    while (currentLayerDepth < currentDepthMapValue) {
-        currentTexCoords -= deltaTexCoords;
-        currentDepthMapValue = texture(material.texture_height1, currentTexCoords).r;  
-        currentLayerDepth += layerDepth;
-    }
-
-    vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
-
-    float beforeDepth = texture(material.texture_height1, prevTexCoords).r - currentLayerDepth + layerDepth;
-    float afterDepth = currentDepthMapValue - currentLayerDepth;
-    
-    float weight = afterDepth / (afterDepth - beforeDepth);
-    vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
-
-    return finalTexCoords;
-}
+uniform bool shouldAttenuate;
 
 void main() {
-    vec3 viewDir = normalize(fs_in.tangViewPos - fs_in.tangFragPos);
-    vec2 tex = parallaxMapping(fs_in.tex,  viewDir);
-
-    if(tex.x > 1.0 || tex.y > 1.0 || tex.x < 0.0 || tex.y < 0.0)
-        discard;
-
-
-    vec3 norm = texture(material.texture_normal1, tex).rgb;
-    // transform normal vector to range [-1,1]
-    norm = normalize(norm * 2.0 - 1.0); 
-
     vec3 ambient = light.ambient * texture(material.texture_diffuse1, tex).rgb;
 
-    vec3 lightDir = normalize(fs_in.tangLightPos - fs_in.tangFragPos);
+    vec3 norm = normalize(normal);
+    vec3 lightDir = normalize(-light.direction);
 
     float diff = max(dot(norm, lightDir), 0.0);
     vec3 diffuse = light.diffuse * diff * texture(material.texture_diffuse1, tex).rgb;
 
+    vec3 viewDir = normalize(viewPos - fragPos);
     vec3 halfwayDir = normalize(lightDir + viewDir);
 
     float spec = pow(max(dot(norm, halfwayDir), 0.0), material.shininess);
-    vec3 specular = light.specular * spec * 0.2;
+    vec3 specular = light.specular * spec * texture(material.texture_specular1, tex).rgb;
 
     vec3 result = ambient + diffuse + specular;
 
-    FragColor = vec4(result, 1.0);
+    FragColor = vec4(result, 1.0f);
 }
 
