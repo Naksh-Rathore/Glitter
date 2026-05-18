@@ -1,4 +1,6 @@
 #include <cstring>
+#include <stdexcept>
+#include <iostream>
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -7,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <stb_image.h>
+#include <stdexcept>
 
 #include "camera.h"
 #include "shader.h"
@@ -24,6 +27,13 @@ void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double
 void processInput(GLFWwindow *window);
 
 void setShaderUniforms(Shader& shader);
+
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad();
+
+bool hdrEnabled = false;
+bool hdrKeyPressed = false;
 
 int main(int argc, char **argv) {
 
@@ -58,6 +68,41 @@ int main(int argc, char **argv) {
     setShaderUniforms(shader);
     glUseProgram(0);
 
+    GLuint hdrFbo;
+    glGenFramebuffers(1, &hdrFbo);
+
+    GLuint colorBuffer;
+
+    glGenTextures(1, &colorBuffer);
+    glBindTexture(GL_TEXTURE_2D, colorBuffer);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    GLuint rboDepth;
+
+    glGenRenderbuffers(1, &rboDepth);
+    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCREEN_WIDTH, SCREEN_HEIGHT);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, hdrFbo);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::runtime_error("Framebuffer not complete!");
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    Shader hdrShader("Glitter/Assets/hdr-shader");
+
+    hdrShader.use();
+    hdrShader.setInt("hdrBuffer", 0);
+    glUseProgram(0);
+
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
@@ -65,7 +110,10 @@ int main(int argc, char **argv) {
 
         processInput(window);
 
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        glBindFramebuffer(GL_FRAMEBUFFER, hdrFbo);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.use();
@@ -76,6 +124,22 @@ int main(int argc, char **argv) {
         shader.setVec3("viewPos", camera.pos());
 
         model.draw(shader);        
+
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        int fbWidth, fbHeight;
+        glfwGetFramebufferSize(window, &fbWidth, &fbHeight);
+
+        glViewport(0, 0, fbWidth, fbHeight);
+
+        hdrShader.use();
+
+        hdrShader.setBool("hdrEnabled", hdrEnabled);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, colorBuffer);
+
+        renderQuad();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -119,9 +183,45 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !hdrKeyPressed)
+    {
+        hdrEnabled = !hdrEnabled;
+        hdrKeyPressed = true;
+    }
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
+    {
+        hdrKeyPressed = false;
+    }
 }
 
 void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {
     camera.processScrollInput(yoffset);
+}
+
+void renderQuad() {
+    if (quadVAO == 0)
+    {
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays(1, &quadVAO);
+        glGenBuffers(1, &quadVBO);
+        glBindVertexArray(quadVAO);
+        glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+    }
+    glBindVertexArray(quadVAO);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glBindVertexArray(0);
 }
 
