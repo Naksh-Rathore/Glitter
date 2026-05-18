@@ -34,6 +34,8 @@ void renderQuad();
 bool hdrEnabled = false;
 bool hdrKeyPressed = false;
 
+float exposure = 1.0f;
+
 int main(int argc, char **argv) {
 
     bool shouldFullscreen = false;
@@ -134,11 +136,14 @@ int main(int argc, char **argv) {
         hdrShader.use();
 
         hdrShader.setBool("hdrEnabled", hdrEnabled);
+        hdrShader.setFloat("exposure", exposure);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, colorBuffer);
 
         renderQuad();
+
+        glUseProgram(0);
 
         glfwSwapBuffers(window);
         glfwPollEvents();
