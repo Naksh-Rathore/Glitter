@@ -31,9 +31,6 @@ unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad();
 
-bool hdrEnabled = false;
-bool hdrKeyPressed = false;
-
 float exposure = 1.0f;
 
 int main(int argc, char **argv) {
@@ -135,7 +132,6 @@ int main(int argc, char **argv) {
 
         hdrShader.use();
 
-        hdrShader.setBool("hdrEnabled", hdrEnabled);
         hdrShader.setFloat("exposure", exposure);
 
         glActiveTexture(GL_TEXTURE0);
@@ -187,16 +183,6 @@ void processInput(GLFWwindow *window) {
         camera.processKeyboardInput(CameraDirection::LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.processKeyboardInput(CameraDirection::RIGHT, deltaTime);
-
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS && !hdrKeyPressed)
-    {
-        hdrEnabled = !hdrEnabled;
-        hdrKeyPressed = true;
-    }
-    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_RELEASE)
-    {
-        hdrKeyPressed = false;
-    }
 }
 
 void scrollCallback([[maybe_unused]] GLFWwindow* window, [[maybe_unused]] double xoffset, double yoffset) {
