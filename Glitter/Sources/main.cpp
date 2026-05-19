@@ -56,9 +56,8 @@ int main(int argc, char **argv) {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_FRAMEBUFFER_SRGB);
 
-    Model model("Glitter/Assets/dining-room/dining-room.obj");
+    Model model("Glitter/Assets/backpack/backpack.obj", true);
 
     Shader shader("Glitter/Assets/shaders");
 
@@ -83,7 +82,6 @@ int main(int argc, char **argv) {
 
     glGenRenderbuffers(1, &rboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCREEN_WIDTH, SCREEN_HEIGHT);
 
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFbo);
@@ -154,11 +152,11 @@ void setShaderUniforms(Shader& shader) {
     shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
-    shader.setVec3("light.position", glm::vec3(0.0f));
+    shader.setVec3("light.position", glm::vec3(0.0f, -2.0f, 0.0f));
 
     shader.setVec3("light.ambient", glm::vec3(0.22f));
-    shader.setVec3("light.diffuse", glm::vec3(0.5f));
-    shader.setVec3("light.specular", glm::vec3(1.0f));
+    shader.setVec3("light.diffuse", glm::vec3(15.0f));
+    shader.setVec3("light.specular", glm::vec3(25.0f));
 
     shader.setFloat("light.constant", 1.0f);
     shader.setFloat("light.linear", 0.09f);
