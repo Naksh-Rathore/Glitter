@@ -31,7 +31,7 @@ unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad();
 
-float exposure = 1.5f;
+float exposure = 1.0f;
 
 int main(int argc, char **argv) {
 
