@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
     glEnable(GL_DEPTH_TEST);
 
-    Model model("Glitter/Assets/dining-room/dining-room.obj");
+    Model model("Glitter/Assets/sponza-palace/sponza-palace.obj");
 
     Shader shader("Glitter/Assets/shaders");
 

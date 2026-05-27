@@ -1,3 +1,0 @@
-Model by dylanheyes, from https://sketchfab.com/3d-models/modern-dining-room-df3f3c9f6233447eb8b7ee129f3bace5, licensed under CC Attribution 4.0
-
-Modified texture paths and filenames and converted to .obj (Naksh Rathore)
