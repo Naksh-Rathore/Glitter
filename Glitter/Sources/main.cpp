@@ -31,7 +31,7 @@ unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad();
 
-float exposure = 1.0f;
+float exposure = 0.5f;
 
 int main(int argc, char **argv) {
 
@@ -152,7 +152,7 @@ void setShaderUniforms(Shader& shader) {
     shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
-    shader.setVec3("light.position", glm::vec3(0.0f, -2.0f, 0.0f));
+    shader.setVec3("light.position", glm::vec3(0.0f, 2.0f, 0.0f));
 
     shader.setVec3("light.ambient", glm::vec3(0.22f));
     shader.setVec3("light.diffuse", glm::vec3(15.0f));
