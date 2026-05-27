@@ -4,6 +4,10 @@ layout (location = 1) in vec2 aTexCoords;
 
 out vec2 TexCoords;
 
+uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
+
 void main()
 {
     TexCoords = aTexCoords;

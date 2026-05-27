@@ -31,7 +31,13 @@ unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad();
 
+unsigned int cubeVAO = 0;
+unsigned int cubeVBO = 0;
+void renderCube();
+
 float exposure = 0.5f;
+
+glm::vec3 lightPos(0.0f, 0.25f, 0.0f);
 
 int main(int argc, char **argv) {
 
@@ -58,7 +64,6 @@ int main(int argc, char **argv) {
     glEnable(GL_DEPTH_TEST);
 
     Model model("Glitter/Assets/sponza-palace/sponza-palace.obj");
-
     Shader shader("Glitter/Assets/shaders");
 
     shader.use();
@@ -99,6 +104,14 @@ int main(int argc, char **argv) {
     hdrShader.setInt("hdrBuffer", 0);
     glUseProgram(0);
 
+    Shader lightShader("Glitter/Assets/light-shader");
+
+    lightShader.use();
+    lightShader.setMat4("model", glm::scale(glm::translate(glm::mat4(1.0f), lightPos), glm::vec3(0.05f)));
+    lightShader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
+    lightShader.setMat4("view", camera.viewMatrix());
+    glUseProgram(0);
+
     while (!glfwWindowShouldClose(window)) {    
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
@@ -120,6 +133,13 @@ int main(int argc, char **argv) {
         shader.setVec3("viewPos", camera.pos());
 
         model.draw(shader);        
+
+        lightShader.use();
+
+        lightShader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
+        lightShader.setMat4("view", camera.viewMatrix());
+ 
+        renderCube();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -152,7 +172,7 @@ void setShaderUniforms(Shader& shader) {
     shader.setMat4("projection", glm::perspective(glm::radians(camera.m_zoom), SCREEN_WIDTH / SCREEN_HEIGHT, 0.1f, 100.0f));
     shader.setMat4("view", camera.viewMatrix());
 
-    shader.setVec3("light.position", glm::vec3(0.0f, 2.0f, 0.0f));
+    shader.setVec3("light.position", lightPos);
 
     shader.setVec3("light.ambient", glm::vec3(0.22f));
     shader.setVec3("light.diffuse", glm::vec3(15.0f));
@@ -213,3 +233,88 @@ void renderQuad() {
     glBindVertexArray(0);
 }
 
+
+void renderCube() {
+    // initialize (if necessary)
+    if (cubeVAO == 0)
+    {
+        float vertices[] = {
+            // positions
+
+            // back face
+            -1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f,  1.0f, -1.0f,
+
+            // front face
+            -1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+
+            // left face
+            -1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f, -1.0f,
+            -1.0f, -1.0f,  1.0f,
+            -1.0f,  1.0f,  1.0f,
+
+            // right face
+             1.0f,  1.0f,  1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+
+            // bottom face
+            -1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f, -1.0f,
+             1.0f, -1.0f,  1.0f,
+             1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f,  1.0f,
+            -1.0f, -1.0f, -1.0f,
+
+            // top face
+            -1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+             1.0f,  1.0f, -1.0f,
+             1.0f,  1.0f,  1.0f,
+            -1.0f,  1.0f, -1.0f,
+            -1.0f,  1.0f,  1.0f
+        };
+
+        glGenVertexArrays(1, &cubeVAO);
+        glGenBuffers(1, &cubeVBO);
+
+        glBindVertexArray(cubeVAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+        // position attribute only
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(
+            0,
+            3,
+            GL_FLOAT,
+            GL_FALSE,
+            3 * sizeof(float),
+            (void*)0
+        );
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+    }
+
+    // render cube
+    glBindVertexArray(cubeVAO);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+}
